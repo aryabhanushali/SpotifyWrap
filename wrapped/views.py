@@ -4,6 +4,9 @@ from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from urllib.parse import urlencode
 import datetime
+import random
+import string
+from .models import SpotifyWrappedData
 
 
 # Create your views here.
@@ -86,6 +89,9 @@ def user_dashboard(request):
         "https://api.spotify.com/v1/me/player/recently-played?limit=50", headers=headers  # Use a larger limit if desired
     ).json().get("items", [])
 
+    wrapped_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+
     # Calculate Top Genres
     genre_count = {}
     for artist in top_artists:
@@ -133,8 +139,24 @@ def user_dashboard(request):
         {"title": "Thanks", "items": [], "content": "That's a wrap on your Spotify highlights!"}
     ]
 
-    context = {"slides": slides}
+    context = {"slides": slides,
+               'wrapped_id': wrapped_id}
     return render(request, "wrapped/dashboard.html", context)
+
+
+def shareable_page(request, wrapped_id):
+    try:
+        wrapped_data = SpotifyWrappedData.objects.get(wrapped_id=wrapped_id)
+    except SpotifyWrappedData.DoesNotExist:
+        return render(request, "wrapped/not_found.html")  # Error page if ID is invalid
+
+    context = {
+        "top_tracks": wrapped_data.top_tracks,
+        "top_artists": wrapped_data.top_artists,
+        "top_genres": wrapped_data.top_genres,
+        "total_time_listened": wrapped_data.total_time_listened,
+    }
+    return render(request, "wrapped/shareable.html", context)
 
 
 

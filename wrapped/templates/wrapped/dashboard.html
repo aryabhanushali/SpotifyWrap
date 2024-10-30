@@ -122,6 +122,14 @@
         <h2>Thanks for Viewing!</h2>
         <p>That's a wrap on your Spotify highlights!</p>
         <button onclick="showSlide(8);">Previous</button>
+
+        <!-- Social Sharing Section -->
+        <div class="social-share">
+            <h3>Share Your Wrapped:</h3>
+             <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}" target="_blank" class="btn btn-share">View and Share Link</a>
+        </div>
+        
+        
     </div>
 </div>
 
@@ -137,6 +145,12 @@
 
     // Show the first slide initially
     showSlide(1);
+    
+    // sharing
+    const pageTitle = "My Spotify Wrapped";
+    const pageURL = window.location.href;  // Current page URL
+
+
 </script>
 {% endblock %}
 

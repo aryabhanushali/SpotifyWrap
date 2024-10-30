@@ -25,4 +25,7 @@ urlpatterns = [
     path("spotify/callback/", views.spotify_callback, name="spotify_callback"),
     path("dashboard/", views.user_dashboard, name="user_dashboard"),
     path("spotify/logout/", views.spotify_logout, name="spotify_logout"),
+
+    path("wrapped/<str:wrapped_id>/", views.shareable_page, name="shareable_page"),
+
 ]

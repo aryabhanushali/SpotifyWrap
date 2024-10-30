@@ -1,0 +1,39 @@
+{% extends "wrapped/base.html" %}
+
+{% block content %}
+<h1>{{ user.username }}'s Spotify Wrapped</h1>
+
+<h2>Top Tracks</h2>
+<ul>
+    {% for track in top_tracks %}
+        <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Top Artists</h2>
+<ul>
+    {% for artist in top_artists %}
+        <li>{{ artist.name }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Top Genres</h2>
+<ul>
+    {% for genre in top_genres %}
+        <li>{{ genre }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Total Time Listened</h2>
+<p>{{ total_time_listened }} minutes</p>
+    
+    <div class="social-share">
+        <h3>Share This Wrapped</h3>
+        <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-linkedin">Share on LinkedIn</a>
+        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-twitter">Share on Twitter</a>
+    </div>
+
+<p><a href="/">Back to Home</a></p>
+    
+    
+{% endblock %}
