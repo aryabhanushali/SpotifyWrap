@@ -1,17 +1,56 @@
-<!-- templates/myapp/dashboard.html -->
+{% extends "wrapped/base.html" %}
+
+{% block content %}
 <h1>Your Spotify Wrapped</h1>
 <a href="{% url 'spotify_logout' %}" class="btn btn-danger">Log Out</a>
 
-<h2>Top Tracks</h2>
-<ul>
-  {% for track in top_tracks %}
-  <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
-  {% endfor %}
-</ul>
+<div class="slide-container">
+    {% for slide in slides %}
+        <div class="slide" id="slide-{{ forloop.counter }}" style="display: none;">
+            <h2>{{ slide.title }}</h2>
+            <ul>
+                {% if slide.title == "Top Tracks" %}
+                    {% for track in slide.items %}
+                        <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
+                    {% endfor %}
+                {% elif slide.title == "Top Artists" %}
+                    {% for artist in slide.items %}
+                        <li>{{ artist.name }}</li>
+                    {% endfor %}
+                {% elif slide.title == "Recently Played" %}
+                    {% for item in slide.items %}
+                        <li>{{ item.track.name }} by {{ item.track.artists|join:", " }}</li>
+                    {% endfor %}
+                {% elif slide.title == "Top Genres" %}
+                    {% for genre, count in slide.items %}
+                        <li>{{ genre }} ({{ count }} artists)</li>
+                    {% endfor %}
+                {% elif slide.title == "Track Popularity" %}
+                    {% for track in slide.items %}
+                        <li>{{ track.name }} - Popularity: {{ track.popularity }}</li>
+                    {% endfor %}
+                {% elif slide.title == "Artist Followers" %}
+                    {% for artist in slide.items %}
+                        <li>{{ artist.name }} - Followers: {{ artist.followers }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <button onclick="showSlide({{ forloop.counter0 }});">Previous</button>
+            <button onclick="showSlide({{ forloop.counter }} + 2);">Next</button>
+        </div>
+    {% endfor %}
+</div>
 
-<h2>Top Artists</h2>
-<ul>
-  {% for artist in top_artists %}
-  <li>{{ artist.name }}</li>
-  {% endfor %}
-</ul>
+<script>
+    function showSlide(slideNumber) {
+        const slides = document.querySelectorAll(".slide");
+        slides.forEach(slide => slide.style.display = "none");
+
+        // Show the requested slide and loop back if out of bounds
+        document.getElementById(`slide-${(slideNumber % slides.length) + 1}`).style.display = "block";
+    }
+
+    // Show the first slide initially
+    showSlide(0);
+</script>
+{% endblock %}

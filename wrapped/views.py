@@ -67,31 +67,46 @@ def refresh_token(request):
 
 def user_dashboard(request):
     access_token = request.session.get("access_token")
-    print(access_token)
-    if access_token == None:
+    if access_token is None:
         return redirect("home")
 
     headers = {"Authorization": f"Bearer {access_token}"}
 
-    # Fetch top tracks
-    top_tracks_response = requests.get(
-        "https://api.spotify.com/v1/me/top/tracks?limit=10", headers=headers
-    )
-    if top_tracks_response.status_code != 200:
-        print(f"Top Tracks API Error: {top_tracks_response.status_code}")
-        print(top_tracks_response.text)
+    # Fetch data from Spotify API
+    top_tracks = requests.get(
+        "https://api.spotify.com/v1/me/top/tracks?limit=5", headers=headers
+    ).json().get("items", [])
 
-    top_tracks = top_tracks_response.json().get("items", [])
+    top_artists = requests.get(
+        "https://api.spotify.com/v1/me/top/artists?limit=5", headers=headers
+    ).json().get("items", [])
 
-    # Fetch top artists
-    top_artists_response = requests.get(
-        "https://api.spotify.com/v1/me/top/artists?limit=10", headers=headers
-    )
+    recent_tracks = requests.get(
+        "https://api.spotify.com/v1/me/player/recently-played?limit=5", headers=headers
+    ).json().get("items", [])
 
-    if top_artists_response.status_code != 200:
-        print(f"Top Artists API Error: {top_artists_response.status_code}")
-        print(top_artists_response.text)
-    top_artists = top_artists_response.json().get("items", [])
+    # Process data for additional slides
+    top_genres = {}
+    for artist in top_artists:
+        for genre in artist.get("genres", []):
+            top_genres[genre] = top_genres.get(genre, 0) + 1
+    top_genres = sorted(top_genres.items(), key=lambda x: x[1], reverse=True)[:5]
 
-    context = {"top_tracks": top_tracks, "top_artists": top_artists}
+    top_track_popularity = [{"name": track["name"], "popularity": track["popularity"]} for track in top_tracks]
+
+    artist_followers = [{"name": artist["name"], "followers": artist["followers"]["total"]} for artist in top_artists]
+
+    # Organize data into slides
+    slides = [
+        {"title": "Top Tracks", "items": top_tracks},
+        {"title": "Top Artists", "items": top_artists},
+        {"title": "Recently Played", "items": recent_tracks},
+        {"title": "Top Genres", "items": top_genres},
+        {"title": "Track Popularity", "items": top_track_popularity},
+        {"title": "Artist Followers", "items": artist_followers},
+    ]
+
+    context = {"slides": slides}
     return render(request, "wrapped/dashboard.html", context)
+
+
