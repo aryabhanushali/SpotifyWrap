@@ -5,52 +5,138 @@
 <a href="{% url 'spotify_logout' %}" class="btn btn-danger">Log Out</a>
 
 <div class="slide-container">
-    {% for slide in slides %}
-        <div class="slide" id="slide-{{ forloop.counter }}" style="display: none;">
-            <h2>{{ slide.title }}</h2>
-            <ul>
-                {% if slide.title == "Top Tracks" %}
-                    {% for track in slide.items %}
-                        <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
-                    {% endfor %}
-                {% elif slide.title == "Top Artists" %}
-                    {% for artist in slide.items %}
-                        <li>{{ artist.name }}</li>
-                    {% endfor %}
-                {% elif slide.title == "Recently Played" %}
-                    {% for item in slide.items %}
-                        <li>{{ item.track.name }} by {{ item.track.artists|join:", " }}</li>
-                    {% endfor %}
-                {% elif slide.title == "Top Genres" %}
-                    {% for genre, count in slide.items %}
-                        <li>{{ genre }} ({{ count }} artists)</li>
-                    {% endfor %}
-                {% elif slide.title == "Track Popularity" %}
-                    {% for track in slide.items %}
-                        <li>{{ track.name }} - Popularity: {{ track.popularity }}</li>
-                    {% endfor %}
-                {% elif slide.title == "Artist Followers" %}
-                    {% for artist in slide.items %}
-                        <li>{{ artist.name }} - Followers: {{ artist.followers }}</li>
-                    {% endfor %}
-                {% endif %}
-            </ul>
-            <button onclick="showSlide({{ forloop.counter0 }});">Previous</button>
-            <button onclick="showSlide({{ forloop.counter }} + 2);">Next</button>
-        </div>
-    {% endfor %}
+    <!-- Slide 1: Welcome Slide -->
+    <div class="slide" id="slide-1">
+        <h2>Welcome to Your Spotify Wrapped!</h2>
+        <p>Discover your top tracks, artists, and more!</p>
+        <button onclick="showSlide(2);">Next</button>
+    </div>
+
+    <!-- Slide 2: Top Tracks -->
+    <div class="slide" id="slide-2" style="display:none;">
+        <h2>Your Top Tracks</h2>
+        <ul>
+          {% for track in slides.1.items %}
+            <li>
+              {% if track.album.images.0.url %}
+                <img src="{{ track.album.images.0.url }}" alt="{{ track.name }}" width="50">
+              {% endif %}
+              {{ track.name }} by {{ track.artists|join:", " }}
+            </li>
+          {% endfor %}
+        </ul>
+        <button onclick="showSlide(1);">Previous</button>
+        <button onclick="showSlide(3);">Next</button>
+    </div>
+
+    <!-- Slide 3: Top Artists -->
+    <div class="slide" id="slide-3" style="display:none;">
+        <h2>Your Top Artists</h2>
+        <ul>
+          {% for artist in slides.2.items %}
+            <li>
+              {% if artist.images.0.url %}
+                <img src="{{ artist.images.0.url }}" alt="{{ artist.name }}" width="50">
+              {% endif %}
+              {{ artist.name }}
+            </li>
+          {% endfor %}
+        </ul>
+        <button onclick="showSlide(2);">Previous</button>
+        <button onclick="showSlide(4);">Next</button>
+    </div>
+
+    <!-- Slide 4: Recently Played -->
+    <div class="slide" id="slide-4" style="display:none;">
+        <h2>Recently Played</h2>
+        <ul>
+          {% for item in slides.3.items %}
+            <li>
+              {% if item.track.album.images.0.url %}
+                <img src="{{ item.track.album.images.0.url }}" alt="{{ item.track.name }}" width="50">
+              {% endif %}
+              {{ item.track.name }} by {{ item.track.artists|join:", " }}
+            </li>
+          {% endfor %}
+        </ul>
+        <button onclick="showSlide(3);">Previous</button>
+        <button onclick="showSlide(5);">Next</button>
+    </div>
+
+    <!-- Slide 5: Top Genres -->
+    <div class="slide" id="slide-5" style="display:none;">
+        <h2>Your Top Genres</h2>
+        <ul>
+          {% for genre, count in slides.4.items %}
+            <li>{{ genre }} ({{ count }} artists)</li>
+          {% endfor %}
+        </ul>
+        <button onclick="showSlide(4);">Previous</button>
+        <button onclick="showSlide(6);">Next</button>
+    </div>
+
+    <!-- Slide 6: Track Popularity -->
+    <div class="slide" id="slide-6" style="display:none;">
+        <h2>Track Popularity</h2>
+        <ul>
+          {% for track in slides.5.items %}
+            <li>
+              {% if track.image %}
+                <img src="{{ track.image }}" alt="{{ track.name }}" width="50">
+              {% endif %}
+              {{ track.name }} - Popularity: {{ track.popularity }}
+            </li>
+          {% endfor %}
+        </ul>
+        <button onclick="showSlide(5);">Previous</button>
+        <button onclick="showSlide(7);">Next</button>
+    </div>
+
+    <!-- Slide 7: Artist Followers -->
+    <div class="slide" id="slide-7" style="display:none;">
+        <h2>Artist Followers</h2>
+        <ul>
+          {% for artist in slides.6.items %}
+            <li>
+              {% if artist.image %}
+                <img src="{{ artist.image }}" alt="{{ artist.name }}" width="50">
+              {% endif %}
+              {{ artist.name }} - Followers: {{ artist.followers }}
+            </li>
+          {% endfor %}
+        </ul>
+        <button onclick="showSlide(6);">Previous</button>
+        <button onclick="showSlide(8);">Next</button>
+    </div>
+
+    <!-- Slide 8: Total Time Listened -->
+    <div class="slide" id="slide-8" style="display:none;">
+        <h2>Total Time Listened</h2>
+        <p>{{ slides.7.content }}</p>
+        <button onclick="showSlide(7);">Previous</button>
+        <button onclick="showSlide(9);">Next</button>
+    </div>
+
+    <!-- Slide 9: Closing Slide -->
+    <div class="slide" id="slide-9" style="display:none;">
+        <h2>Thanks for Viewing!</h2>
+        <p>That's a wrap on your Spotify highlights!</p>
+        <button onclick="showSlide(8);">Previous</button>
+    </div>
 </div>
 
 <script>
     function showSlide(slideNumber) {
+        // Hide all slides
         const slides = document.querySelectorAll(".slide");
         slides.forEach(slide => slide.style.display = "none");
 
-        // Show the requested slide and loop back if out of bounds
-        document.getElementById(`slide-${(slideNumber % slides.length) + 1}`).style.display = "block";
+        // Show the requested slide
+        document.getElementById(`slide-${slideNumber}`).style.display = "block";
     }
 
     // Show the first slide initially
-    showSlide(0);
+    showSlide(1);
 </script>
 {% endblock %}
+

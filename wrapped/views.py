@@ -3,6 +3,7 @@ from django.conf import settings
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from urllib.parse import urlencode
+import datetime
 
 
 # Create your views here.
@@ -82,31 +83,59 @@ def user_dashboard(request):
     ).json().get("items", [])
 
     recent_tracks = requests.get(
-        "https://api.spotify.com/v1/me/player/recently-played?limit=5", headers=headers
+        "https://api.spotify.com/v1/me/player/recently-played?limit=50", headers=headers  # Use a larger limit if desired
     ).json().get("items", [])
 
-    # Process data for additional slides
-    top_genres = {}
+    # Calculate Top Genres
+    genre_count = {}
     for artist in top_artists:
         for genre in artist.get("genres", []):
-            top_genres[genre] = top_genres.get(genre, 0) + 1
-    top_genres = sorted(top_genres.items(), key=lambda x: x[1], reverse=True)[:5]
+            genre_count[genre] = genre_count.get(genre, 0) + 1
+    top_genres = sorted(genre_count.items(), key=lambda x: x[1], reverse=True)[:5]
 
-    top_track_popularity = [{"name": track["name"], "popularity": track["popularity"]} for track in top_tracks]
+    # Calculate Total Time Listened from recent tracks (in hours and minutes)
+    total_time_ms = sum(track["track"]["duration_ms"] for track in recent_tracks)
+    total_time_sec = total_time_ms / 1000  # convert ms to seconds
+    total_time_min = total_time_sec / 60
+    hours = int(total_time_min // 60)
+    minutes = int(total_time_min % 60)
+    total_time_listened = f"{hours} hrs {minutes} mins"
 
-    artist_followers = [{"name": artist["name"], "followers": artist["followers"]["total"]} for artist in top_artists]
+    # Prepare additional slides data
+    top_track_popularity = [
+        {
+            "name": track["name"],
+            "popularity": track["popularity"],
+            "image": track["album"]["images"][0]["url"]
+        }
+        for track in top_tracks if track.get("album") and track["album"].get("images")
+    ]
+
+    artist_followers = [
+        {
+            "name": artist["name"],
+            "followers": artist["followers"]["total"],
+            "image": artist["images"][0]["url"]
+        }
+        for artist in top_artists if artist.get("images")
+    ]
 
     # Organize data into slides
     slides = [
+        {"title": "Welcome", "items": [], "content": "Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!"},
         {"title": "Top Tracks", "items": top_tracks},
         {"title": "Top Artists", "items": top_artists},
         {"title": "Recently Played", "items": recent_tracks},
         {"title": "Top Genres", "items": top_genres},
         {"title": "Track Popularity", "items": top_track_popularity},
         {"title": "Artist Followers", "items": artist_followers},
+        {"title": "Total Time Listened", "items": [], "content": total_time_listened},
+        {"title": "Thanks", "items": [], "content": "That's a wrap on your Spotify highlights!"}
     ]
 
     context = {"slides": slides}
     return render(request, "wrapped/dashboard.html", context)
+
+
 
 
