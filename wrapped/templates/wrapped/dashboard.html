@@ -1,0 +1,17 @@
+<!-- templates/myapp/dashboard.html -->
+<h1>Your Spotify Wrapped</h1>
+<a href="{% url 'spotify_logout' %}" class="btn btn-danger">Log Out</a>
+
+<h2>Top Tracks</h2>
+<ul>
+  {% for track in top_tracks %}
+  <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
+  {% endfor %}
+</ul>
+
+<h2>Top Artists</h2>
+<ul>
+  {% for artist in top_artists %}
+  <li>{{ artist.name }}</li>
+  {% endfor %}
+</ul>
