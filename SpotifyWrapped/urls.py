@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path
 from wrapped import views
 
+
 urlpatterns = [
     path("", views.home, name="home"),
     path("spotify/login/", views.spotify_login, name="spotify_login"),
@@ -27,5 +28,8 @@ urlpatterns = [
     path("spotify/logout/", views.spotify_logout, name="spotify_logout"),
 
     path("wrapped/<str:wrapped_id>/", views.shareable_page, name="shareable_page"),
+
+    path('register/', views.register, name='register'),
+    path('login/', views.user_login, name='login'),
 
 ]
