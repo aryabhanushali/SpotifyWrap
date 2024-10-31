@@ -3,16 +3,52 @@ from django.conf import settings
 from django.shortcuts import redirect, render
 from django.http import JsonResponse
 from urllib.parse import urlencode
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
 import datetime
 import random
 import string
-from .models import SpotifyWrappedData
+from .models import SpotifyWrappedData, Profile
 
 
 # Create your views here.
 def home(request):
     return render(request, "wrapped/home.html")
 
+
+#creating new wrapped user
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            Profile.objects.create(user=user)
+            messages.success(request, "Registration successful! You can now log in.")
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'wrapped/registration/register.html', {'form': form})
+
+#login for wrapped user
+def user_login(request):
+    # Check if the user is already logged in
+    if request.user.is_authenticated:
+        return redirect('user_dashboard')  # Direct authenticated users to their dashboard
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())  # Log in the user
+            return redirect('user_dashboard')  # Redirect to dashboard after login
+        else:
+            return render(request, 'wrapped/registration/login.html', {'form': form, 'error': 'Invalid username or password'})
+    else:
+        form = AuthenticationForm()
+    return render(request, 'wrapped/registration/login.html', {'form': form})
 
 def spotify_login(request):
     auth_url = "https://accounts.spotify.com/authorize"
@@ -54,7 +90,6 @@ def spotify_callback(request):
     request.session["refresh_token"] = token_info.get("refresh_token")
     return redirect("user_dashboard")
 
-
 def refresh_token(request):
     refresh_token = request.session.get("refresh_token")
     token_url = "https://accounts.spotify.com/api/token"
@@ -90,7 +125,6 @@ def user_dashboard(request):
     ).json().get("items", [])
 
     wrapped_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-
 
     # Calculate Top Genres
     genre_count = {}
@@ -129,16 +163,24 @@ def user_dashboard(request):
     # Organize data into slides
     slides = [
         {"title": "Welcome", "items": [], "content": "Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!"},
-        {"title": "Top Tracks", "items": top_tracks},
-        {"title": "Top Artists", "items": top_artists},
-        {"title": "Recently Played", "items": recent_tracks},
-        {"title": "Top Genres", "items": top_genres},
-        {"title": "Track Popularity", "items": top_track_popularity},
+        {"title": "Your top tracks", "items": top_tracks},
+        {"title": "How popular are your favorite tunes?", "items": top_track_popularity},
+        {"title": "The artists who kept you going", "items": top_artists},
+        {"title": "Genres you loved", "items": top_genres},
+        {"title": "Your recent mood", "items": recent_tracks},
+        {"title": "Overall time Listened", "items": [], "content": total_time_listened},
         {"title": "Artist Followers", "items": artist_followers},
-        {"title": "Total Time Listened", "items": [], "content": total_time_listened},
         {"title": "Thanks", "items": [], "content": "That's a wrap on your Spotify highlights!"}
     ]
-
+    #store in database
+    SpotifyWrappedData.objects.create(
+        user=request.user,
+        wrapped_id=wrapped_id,
+        top_tracks=top_tracks,
+        top_artists=top_artists,
+        top_genres=top_genres,
+        total_time_listened=int(total_time_min),
+    )
     context = {"slides": slides,
                'wrapped_id': wrapped_id}
     return render(request, "wrapped/dashboard.html", context)

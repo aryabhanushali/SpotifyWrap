@@ -7,14 +7,14 @@
 <div class="slide-container">
     <!-- Slide 1: Welcome Slide -->
     <div class="slide" id="slide-1">
-        <h2>Welcome to Your Spotify Wrapped!</h2>
-        <p>Discover your top tracks, artists, and more!</p>
+        <h2>{{ slides.0.title }}</h2>
+        <p>{{ slides.0.content }}</p>
         <button onclick="showSlide(2);">Next</button>
     </div>
 
-    <!-- Slide 2: Top Tracks -->
+    <!-- Slide 2: Your Top Tracks -->
     <div class="slide" id="slide-2" style="display:none;">
-        <h2>Your Top Tracks</h2>
+        <h2>{{ slides.1.title }}</h2>
         <ul>
           {% for track in slides.1.items %}
             <li>
@@ -29,16 +29,16 @@
         <button onclick="showSlide(3);">Next</button>
     </div>
 
-    <!-- Slide 3: Top Artists -->
+    <!-- Slide 3: Track Popularity -->
     <div class="slide" id="slide-3" style="display:none;">
-        <h2>Your Top Artists</h2>
+        <h2>{{ slides.2.title }}</h2>
         <ul>
-          {% for artist in slides.2.items %}
+          {% for track in slides.2.items %}
             <li>
-              {% if artist.images.0.url %}
-                <img src="{{ artist.images.0.url }}" alt="{{ artist.name }}" width="50">
+              {% if track.image %}
+                <img src="{{ track.image }}" alt="{{ track.name }}" width="50">
               {% endif %}
-              {{ artist.name }}
+              {{ track.name }} - Popularity: {{ track.popularity }}
             </li>
           {% endfor %}
         </ul>
@@ -46,16 +46,16 @@
         <button onclick="showSlide(4);">Next</button>
     </div>
 
-    <!-- Slide 4: Recently Played -->
+    <!-- Slide 4: Top Artists -->
     <div class="slide" id="slide-4" style="display:none;">
-        <h2>Recently Played</h2>
+        <h2>{{ slides.3.title }}</h2>
         <ul>
-          {% for item in slides.3.items %}
+          {% for artist in slides.3.items %}
             <li>
-              {% if item.track.album.images.0.url %}
-                <img src="{{ item.track.album.images.0.url }}" alt="{{ item.track.name }}" width="50">
+              {% if artist.images.0.url %}
+                <img src="{{ artist.images.0.url }}" alt="{{ artist.name }}" width="50">
               {% endif %}
-              {{ item.track.name }} by {{ item.track.artists|join:", " }}
+              {{ artist.name }}
             </li>
           {% endfor %}
         </ul>
@@ -65,7 +65,7 @@
 
     <!-- Slide 5: Top Genres -->
     <div class="slide" id="slide-5" style="display:none;">
-        <h2>Your Top Genres</h2>
+        <h2>{{ slides.4.title }}</h2>
         <ul>
           {% for genre, count in slides.4.items %}
             <li>{{ genre }} ({{ count }} artists)</li>
@@ -75,16 +75,16 @@
         <button onclick="showSlide(6);">Next</button>
     </div>
 
-    <!-- Slide 6: Track Popularity -->
+    <!-- Slide 6: Recently Played -->
     <div class="slide" id="slide-6" style="display:none;">
-        <h2>Track Popularity</h2>
+        <h2>{{ slides.5.title }}</h2>
         <ul>
-          {% for track in slides.5.items %}
+          {% for item in slides.5.items %}
             <li>
-              {% if track.image %}
-                <img src="{{ track.image }}" alt="{{ track.name }}" width="50">
+              {% if item.track.album.images.0.url %}
+                <img src="{{ item.track.album.images.0.url }}" alt="{{ item.track.name }}" width="50">
               {% endif %}
-              {{ track.name }} - Popularity: {{ track.popularity }}
+              {{ item.track.name }} by {{ item.track.artists|join:", " }}
             </li>
           {% endfor %}
         </ul>
@@ -92,11 +92,19 @@
         <button onclick="showSlide(7);">Next</button>
     </div>
 
-    <!-- Slide 7: Artist Followers -->
+    <!-- Slide 7: Total Time Listened -->
     <div class="slide" id="slide-7" style="display:none;">
-        <h2>Artist Followers</h2>
+        <h2>{{ slides.6.title }}</h2>
+        <p>{{ slides.6.content }}</p>
+        <button onclick="showSlide(6);">Previous</button>
+        <button onclick="showSlide(8);">Next</button>
+    </div>
+
+    <!-- Slide 8: Artist Followers -->
+    <div class="slide" id="slide-8" style="display:none;">
+        <h2>{{ slides.7.title }}</h2>
         <ul>
-          {% for artist in slides.6.items %}
+          {% for artist in slides.7.items %}
             <li>
               {% if artist.image %}
                 <img src="{{ artist.image }}" alt="{{ artist.name }}" width="50">
@@ -105,52 +113,37 @@
             </li>
           {% endfor %}
         </ul>
-        <button onclick="showSlide(6);">Previous</button>
-        <button onclick="showSlide(8);">Next</button>
-    </div>
-
-    <!-- Slide 8: Total Time Listened -->
-    <div class="slide" id="slide-8" style="display:none;">
-        <h2>Total Time Listened</h2>
-        <p>{{ slides.7.content }}</p>
         <button onclick="showSlide(7);">Previous</button>
         <button onclick="showSlide(9);">Next</button>
     </div>
 
-    <!-- Slide 9: Closing Slide -->
+    <!-- closing -->
     <div class="slide" id="slide-9" style="display:none;">
-        <h2>Thanks for Viewing!</h2>
-        <p>That's a wrap on your Spotify highlights!</p>
+        <h2>{{ slides.8.title }}</h2>
+        <p>{{ slides.8.content }}</p>
         <button onclick="showSlide(8);">Previous</button>
 
-        <!-- Social Sharing Section -->
+        <!-- social -->
         <div class="social-share">
             <h3>Share Your Wrapped:</h3>
              <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}" target="_blank" class="btn btn-share">View and Share Link</a>
         </div>
-        
-        
     </div>
 </div>
 
 <script>
     function showSlide(slideNumber) {
-        // Hide all slides
         const slides = document.querySelectorAll(".slide");
         slides.forEach(slide => slide.style.display = "none");
-
-        // Show the requested slide
         document.getElementById(`slide-${slideNumber}`).style.display = "block";
     }
 
     // Show the first slide initially
     showSlide(1);
-    
+
     // sharing
     const pageTitle = "My Spotify Wrapped";
     const pageURL = window.location.href;  // Current page URL
 
-
 </script>
 {% endblock %}
-

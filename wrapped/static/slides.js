@@ -10,8 +10,15 @@ document.addEventListener("DOMContentLoaded", () => {
         slideIndex++;
         if (slideIndex > slides.length) slideIndex = 1;
         slides[slideIndex - 1].style.display = "block";
-        setTimeout(showSlides, 3000); // Change slide every 3 seconds
+        setTimeout(showSlides, 5000); // Change slide every 5 seconds
     }
-
+    slides[slideIndex].style.display = "block";
     showSlides();
+    let timeoutId;
+    for (let i = 0; i < slides.length; i++) {
+        slides[i].addEventListener("mouseenter", () => clearTimeout(timeoutId));
+        slides[i].addEventListener("mouseleave", () => {
+            timeoutId = setTimeout(showSlides, 5000);
+        });
+    }
 });
