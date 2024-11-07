@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.db import IntegrityError
 import datetime
 import random
 import string
@@ -18,37 +20,6 @@ from .models import SpotifyWrappedData, Profile
 # Create your views here.
 def home(request):
     return render(request, "wrapped/home.html")
-
-
-#creating new wrapped user
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            Profile.objects.create(user=user)
-            messages.success(request, "Registration successful! You can now log in.")
-            return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'wrapped/registration/register.html', {'form': form})
-
-#login for wrapped user
-def user_login(request):
-    # Check if the user is already logged in
-    if request.user.is_authenticated:
-        return redirect('user_dashboard')  # Direct authenticated users to their dashboard
-
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            login(request, form.get_user())  # Log in the user
-            return redirect('user_dashboard')  # Redirect to dashboard after login
-        else:
-            return render(request, 'wrapped/registration/login.html', {'form': form, 'error': 'Invalid username or password'})
-    else:
-        form = AuthenticationForm()
-    return render(request, 'wrapped/registration/login.html', {'form': form})
 
 def spotify_login(request):
     auth_url = "https://accounts.spotify.com/authorize"
@@ -72,23 +43,65 @@ def spotify_logout(request):
 
 
 def spotify_callback(request):
-    code = request.GET.get("code")
-    token_url = "https://accounts.spotify.com/api/token"
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = {
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": settings.SPOTIFY_REDIRECT_URI,
-        "client_id": settings.SPOTIFY_CLIENT_ID,
-        "client_secret": settings.SPOTIFY_CLIENT_SECRET,
-    }
-    response = requests.post(token_url, headers=headers, data=data)
-    token_info = response.json()
+    code = request.GET.get('code')
 
-    # Save tokens in session
-    request.session["access_token"] = token_info.get("access_token")
-    request.session["refresh_token"] = token_info.get("refresh_token")
-    return redirect("user_dashboard")
+    if not code:
+        return HttpResponse('Error: No authorization code received', status=400)
+
+    response = requests.post(
+        'https://accounts.spotify.com/api/token',
+        data={
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': settings.SPOTIFY_REDIRECT_URI,
+            'client_id': settings.SPOTIFY_CLIENT_ID,
+            'client_secret': settings.SPOTIFY_CLIENT_SECRET
+        }
+    )
+
+    data = response.json()
+    access_token = data.get('access_token')
+    if not access_token:
+        return HttpResponse('Error: No access token received', status=400)
+
+    user_data = requests.get(
+        'https://api.spotify.com/v1/me',
+        headers={'Authorization': f'Bearer {access_token}'}
+    ).json()
+
+    spotify_user_id = user_data.get('id')
+    spotify_username = user_data.get('display_name')
+
+    try:
+        user = User.objects.get(username=spotify_user_id)
+    except User.DoesNotExist:
+        try:
+            user = User.objects.create_user(
+                username=spotify_user_id,
+                password='random_password'
+            )
+        except IntegrityError:
+            user = User.objects.create_user(
+                username=spotify_user_id + str(random.randint(1, 1000)),
+                password='random_password'
+            )
+
+    login(request, user)
+    profile, created = Profile.objects.get_or_create(user=user)
+    profile.spotify_access_token = access_token
+    profile.save()
+
+    wrapped_id = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=8))
+    SpotifyWrappedData.objects.create(
+        user=profile,
+        wrapped_id=wrapped_id,
+        top_tracks=[],
+        top_artists=[],
+        top_genres=[],
+        total_time_listened=0
+    )
+
+    return redirect('user_dashboard')
 
 def refresh_token(request):
     refresh_token = request.session.get("refresh_token")
@@ -105,6 +118,8 @@ def refresh_token(request):
 
 
 def user_dashboard(request):
+    profile = Profile.objects.get(user=request.user)
+
     access_token = request.session.get("access_token")
     if access_token is None:
         return redirect("home")
@@ -174,7 +189,7 @@ def user_dashboard(request):
     ]
     #store in database
     SpotifyWrappedData.objects.create(
-        user=request.user,
+        user=profile,
         wrapped_id=wrapped_id,
         top_tracks=top_tracks,
         top_artists=top_artists,

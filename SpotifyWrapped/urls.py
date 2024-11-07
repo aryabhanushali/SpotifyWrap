@@ -29,7 +29,4 @@ urlpatterns = [
 
     path("wrapped/<str:wrapped_id>/", views.shareable_page, name="shareable_page"),
 
-    path('register/', views.register, name='register'),
-    path('login/', views.user_login, name='login'),
-
 ]
