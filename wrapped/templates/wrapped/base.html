@@ -3,14 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Django Project</title>
-    <!-- Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Spotify Wrapped</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'spotify-black': '#191414',
+                        'spotify-dark': '#121212',
+                        'spotify-dark-card': '#282828',
+                        'spotify-hover': '#3E3E3E',
+                        'spotify-green': '#1DB954',
+                        'spotify-green-dark': '#1aa34a',
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .btn-spotify {
+                @apply bg-spotify-green text-white px-6 py-3 rounded-full 
+                       hover:bg-spotify-green-dark transition duration-300 
+                       font-semibold text-center inline-block;
+            }
+            .btn-spotify-outline {
+                @apply border-2 border-spotify-green text-spotify-green px-6 py-3 
+                       rounded-full hover:bg-spotify-green hover:text-white 
+                       transition duration-300 font-semibold text-center inline-block;
+            }
+            .card {
+                @apply bg-spotify-dark-card rounded-lg p-6 
+                       hover:bg-spotify-hover transition duration-300;
+            }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #1DB954;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1aa34a;
+        }
+
+        /* Progress bar animation */
+        @keyframes progressFill {
+            from { width: 0; }
+            to { width: var(--progress-width); }
+        }
+        
+        .progress-bar-fill {
+            animation: progressFill 1.5s ease-out forwards;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <div class="container mx-auto">
-        <h1 class="text-3xl font-bold">Hello, Django + Tailwind!</h1>
+<body class="bg-spotify-black text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-spotify-dark shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a href="{% url 'home' %}" class="flex items-center space-x-2">
+                    <!-- Spotify-like Logo -->
+                    <svg class="w-8 h-8 text-spotify-green" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                    </svg>
+                    <span class="text-xl font-bold">Spotify Wrapped</span>
+                </a>
+                
+                {% if user.is_authenticated %}
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-300">Hello, {{ user.username }}</span>
+                    <a href="{% url 'spotify_logout' %}" 
+                       class="btn-spotify-outline text-sm">
+                        Log Out
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% if messages %}
+        <div class="container mx-auto px-4 mt-4">
+            {% for message in messages %}
+            <div class="bg-spotify-dark-card text-white px-6 py-4 rounded-lg mb-4 
+                        {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-spotify-dark mt-12">
+        <div class="container mx-auto px-4 py-6">
+            <div class="text-center text-gray-400 text-sm">
+                <p>Built with Django and Tailwind CSS</p>
+                <p class="mt-2">© {% now "Y" %} Spotify Wrapped. Not affiliated with Spotify AB.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" 
+         class="fixed inset-0 bg-spotify-black bg-opacity-90 hidden items-center justify-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-spotify-green"></div>
+            <p class="text-spotify-green mt-4">Loading your music data...</p>
+        </div>
     </div>
+
+    <script>
+        // Utility function to show/hide loading overlay
+        function showLoading() {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-overlay').classList.add('flex');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+            document.getElementById('loading-overlay').classList.remove('flex');
+        }
+
+        // Add loading indicator for links with data-loading attribute
+        document.querySelectorAll('[data-loading]').forEach(element => {
+            element.addEventListener('click', () => showLoading());
+        });
+
+        // Handle form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => showLoading());
+        });
+    </script>
+
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>
+

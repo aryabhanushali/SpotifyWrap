@@ -1,0 +1,132 @@
+{% extends "wrapped/base.html" %}
+
+{% block extra_head %}
+<style>
+    .modal {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+    }
+    
+    .modal.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    .artist-card {
+        transform: scale(0.95);
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    .artist-card:hover {
+        transform: scale(1);
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Your existing slide content -->
+<div class="slide" id="slide-3" style="display:none;">
+    <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.2.title }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for artist in slides.2.items %}
+        <div class="artist-card card" onclick="showArtistModal('{{ forloop.counter }}')">
+            {% if artist.images.0.url %}
+            <img src="{{ artist.images.0.url }}" 
+                 alt="{{ artist.name }}" 
+                 class="w-full h-48 object-cover rounded-t-lg">
+            {% endif %}
+            <div class="p-4">
+                <h3 class="text-xl font-bold text-white">{{ artist.name }}</h3>
+                <p class="text-gray-400">{{ artist.followers.total }} followers</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Artist Modal -->
+{% for artist in slides.2.items %}
+<div id="artist-modal-{{ forloop.counter }}" 
+     class="modal fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
+    <div class="bg-spotify-dark-card max-w-2xl w-full mx-4 rounded-xl shadow-2xl">
+        <!-- Modal Header -->
+        <div class="relative">
+            <img src="{{ artist.images.0.url }}" 
+                 alt="{{ artist.name }}" 
+                 class="w-full h-48 object-cover rounded-t-xl">
+            <div class="absolute inset-0 bg-gradient-to-t from-spotify-dark-card"></div>
+            <button onclick="hideArtistModal('{{ forloop.counter }}')"
+                    class="absolute top-4 right-4 text-white hover:text-spotify-green">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6">
+            <h3 class="text-2xl font-bold text-white mb-2">{{ artist.name }}</h3>
+            <p class="text-gray-400 mb-6">
+                You spent {{ artist.listening_time.hours }}h {{ artist.listening_time.minutes }}m listening
+            </p>
+
+            <!-- Top Tracks -->
+            <div class="space-y-4">
+                <h4 class="text-lg font-semibold text-spotify-green">Your Most Played Tracks</h4>
+                {% for track in artist.user_top_tracks %}
+                <div class="flex items-center p-3 bg-spotify-black rounded-lg">
+                    <img src="{{ track.album.images.0.url }}" 
+                         alt="{{ track.name }}" 
+                         class="w-12 h-12 rounded">
+                    <div class="ml-4">
+                        <p class="text-white font-medium">{{ track.name }}</p>
+                        <p class="text-sm text-gray-400">{{ track.album.name }}</p>
+                    </div>
+                    <div class="ml-auto text-gray-400">
+                        {{ track.duration_ms|divide:60000|floatformat:0 }} min
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showArtistModal(artistId) {
+    const modal = document.getElementById(`artist-modal-${artistId}`);
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideArtistModal(artistId) {
+    const modal = document.getElementById(`artist-modal-${artistId}`);
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+        const artistId = e.target.id.split('-')[2];
+        hideArtistModal(artistId);
+    }
+});
+
+// Close modal with escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.modal.active');
+        if (activeModal) {
+            const artistId = activeModal.id.split('-')[2];
+            hideArtistModal(artistId);
+        }
+    }
+});
+</script>
+{% endblock %}
