@@ -28,23 +28,20 @@ def spotify_login(request):
         "response_type": "code",
         "redirect_uri": settings.SPOTIFY_REDIRECT_URI,
         "show_dialog": "true",
-        "scope": "user-top-read",  # Request permission to read top songs and artists
+        "scope": "user-top-read",
     }
     url = f"{auth_url}?{urlencode(params)}"
     return redirect(url)
 
 
 def spotify_logout(request):
-    # Clear Spotify-related session data
-    request.session.pop("access_token", None)
-    request.session.pop("refresh_token", None)
-    print(request.session.get("access_token"))
+    request.session.flush()  # Clears all session data
+    print("Session after logout:", request.session.get("access_token"))
     return redirect("home")
 
 
 def spotify_callback(request):
     code = request.GET.get('code')
-
     if not code:
         return HttpResponse('Error: No authorization code received', status=400)
 
@@ -59,15 +56,24 @@ def spotify_callback(request):
         }
     )
 
+    # Check for response errors
+    if response.status_code != 200:
+        return HttpResponse(f"Error: {response.json().get('error_description', 'Unknown error')}", status=400)
+    # Parse the JSON response to get the access token
     data = response.json()
     access_token = data.get('access_token')
+
     if not access_token:
         return HttpResponse('Error: No access token received', status=400)
 
+    # Request user data from Spotify using the access token
     user_data = requests.get(
         'https://api.spotify.com/v1/me',
         headers={'Authorization': f'Bearer {access_token}'}
     ).json()
+
+    if not user_data.get('id'):
+        return HttpResponse('Error: Unable to fetch user data from Spotify', status=400)
 
     spotify_user_id = user_data.get('id')
     spotify_username = user_data.get('display_name')
@@ -86,12 +92,15 @@ def spotify_callback(request):
                 password='random_password'
             )
 
+    # Log the user in
     login(request, user)
+
     profile, created = Profile.objects.get_or_create(user=user)
     profile.spotify_access_token = access_token
     profile.save()
 
     wrapped_id = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=8))
+
     SpotifyWrappedData.objects.create(
         user=profile,
         wrapped_id=wrapped_id,
@@ -101,6 +110,7 @@ def spotify_callback(request):
         total_time_listened=0
     )
 
+    # Redirect to the user dashboard
     return redirect('user_dashboard')
 
 def refresh_token(request):
@@ -131,12 +141,53 @@ def user_dashboard(request):
         "https://api.spotify.com/v1/me/top/tracks?limit=5", headers=headers
     ).json().get("items", [])
 
-    top_artists = requests.get(
+    # Fetch top artists with their detailed data
+    top_artists_response = requests.get(
         "https://api.spotify.com/v1/me/top/artists?limit=5", headers=headers
     ).json().get("items", [])
 
+    # Enhance artist data with their top tracks
+    top_artists = []
+    for artist in top_artists_response:
+        # Get artist's top tracks
+        artist_tracks = requests.get(
+            f"https://api.spotify.com/v1/artists/{artist['id']}/top-tracks?market=US",
+            headers=headers
+        ).json().get("tracks", [])[:5]  # Limit to top 5 tracks
+
+        # Get recent tracks to calculate listening time for this artist
+        recent_tracks = requests.get(
+            "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+            headers=headers
+        ).json().get("items", [])
+
+        # Calculate time spent on this artist
+        artist_time_ms = sum(
+            track["track"]["duration_ms"]
+            for track in recent_tracks
+            if any(a["id"] == artist["id"] for a in track["track"]["artists"])
+        )
+
+        # Convert to hours and minutes
+        artist_minutes = artist_time_ms / (1000 * 60)
+        artist_hours = int(artist_minutes // 60)
+        artist_mins = int(artist_minutes % 60)
+
+        # Add enhanced data to artist object
+        artist.update({
+            "top_tracks": artist_tracks,
+            "listening_time": {
+                "hours": artist_hours,
+                "minutes": artist_mins,
+                "total_ms": artist_time_ms
+            }
+        })
+        top_artists.append(artist)
+
+    # Rest of your existing code for recent tracks and genres
     recent_tracks = requests.get(
-        "https://api.spotify.com/v1/me/player/recently-played?limit=50", headers=headers  # Use a larger limit if desired
+        "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+        headers=headers
     ).json().get("items", [])
 
     wrapped_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -148,9 +199,9 @@ def user_dashboard(request):
             genre_count[genre] = genre_count.get(genre, 0) + 1
     top_genres = sorted(genre_count.items(), key=lambda x: x[1], reverse=True)[:5]
 
-    # Calculate Total Time Listened from recent tracks (in hours and minutes)
+    # Calculate Total Time Listened
     total_time_ms = sum(track["track"]["duration_ms"] for track in recent_tracks)
-    total_time_sec = total_time_ms / 1000  # convert ms to seconds
+    total_time_sec = total_time_ms / 1000
     total_time_min = total_time_sec / 60
     hours = int(total_time_min // 60)
     minutes = int(total_time_min % 60)
@@ -161,7 +212,9 @@ def user_dashboard(request):
         {
             "name": track["name"],
             "popularity": track["popularity"],
-            "image": track["album"]["images"][0]["url"]
+            "image": track["album"]["images"][0]["url"],
+            "preview_url": track.get("preview_url"),  # Added preview URL for audio playback
+            "artists": track["artists"]
         }
         for track in top_tracks if track.get("album") and track["album"].get("images")
     ]
@@ -170,22 +223,57 @@ def user_dashboard(request):
         {
             "name": artist["name"],
             "followers": artist["followers"]["total"],
-            "image": artist["images"][0]["url"]
+            "image": artist["images"][0]["url"],
+            "genres": artist.get("genres", []),
+            "popularity": artist.get("popularity", 0),
+            "top_tracks": artist["top_tracks"],
+            "listening_time": artist["listening_time"]
         }
         for artist in top_artists if artist.get("images")
     ]
 
-    # Organize data into slides
+    # Organize data into slides with enhanced artist data
     slides = [
-        {"title": "Welcome", "items": [], "content": "Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!"},
-        {"title": "Your top tracks", "items": top_tracks},
-        {"title": "How popular are your favorite tunes?", "items": top_track_popularity},
-        {"title": "The artists who kept you going", "items": top_artists},
-        {"title": "Genres you loved", "items": top_genres},
-        {"title": "Your recent mood", "items": recent_tracks},
-        {"title": "Overall time Listened", "items": [], "content": total_time_listened},
-        {"title": "Artist Followers", "items": artist_followers},
-        {"title": "Thanks", "items": [], "content": "That's a wrap on your Spotify highlights!"}
+        {
+            "title": "Welcome",
+            "items": [],
+            "content": "Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!"
+        },
+        {
+            "title": "Top Tracks",
+            "items": top_tracks
+        },
+        {
+            "title": "Top Artists",
+            "items": top_artists,  # Now includes top_tracks and listening_time
+            "artist_details": True  # Flag to indicate this slide has detailed artist data
+        },
+        {
+            "title": "Recently Played",
+            "items": recent_tracks
+        },
+        {
+            "title": "Top Genres",
+            "items": top_genres
+        },
+        {
+            "title": "Track Popularity",
+            "items": top_track_popularity
+        },
+        {
+            "title": "Artist Followers",
+            "items": artist_followers
+        },
+        {
+            "title": "Total Time Listened",
+            "items": [],
+            "content": total_time_listened
+        },
+        {
+            "title": "Thanks",
+            "items": [],
+            "content": "That's a wrap on your Spotify highlights!"
+        }
     ]
     #store in database
     SpotifyWrappedData.objects.create(
@@ -215,6 +303,14 @@ def shareable_page(request, wrapped_id):
     }
     return render(request, "wrapped/shareable.html", context)
 
+def view_old_wrappeds(request):
+    profile = Profile.objects.get(user=request.user)
+    past_wrapped_summaries = SpotifyWrappedData.objects.filter(user=profile).order_by('-created_at')
+
+    context = {
+        "past_wrapped_summaries": past_wrapped_summaries,
+    }
+    return render(request, "wrapped/old_wrappeds.html", context)
 
 
 

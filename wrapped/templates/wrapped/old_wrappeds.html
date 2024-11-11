@@ -1,0 +1,25 @@
+<!-- templates/wrapped/old_wrappeds.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Past Spotify Wrapped Summaries</title>
+</head>
+<body>
+    <h1>Past Spotify Wrapped Summaries</h1>
+    {% if past_wrapped_summaries %}
+        <ul>
+            {% for wrapped in past_wrapped_summaries %}
+                <li>
+                    <a href="{% url 'shareable_page' wrapped.wrapped_id %}">
+                        Wrapped from {{ wrapped.created_at|date:"F j, Y" }} - Total Time Listened: {{ wrapped.total_time_listened }} minutes
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You don’t have any past Wrapped summaries.</p>
+    {% endif %}
+    <a href="{% url 'user_dashboard' %}">Back to Dashboard</a>
+</body>
+</html>
