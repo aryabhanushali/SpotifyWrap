@@ -15,8 +15,18 @@
 
         <!-- Slides Container -->
         <div class="relative min-h-[600px] bg-spotify-card rounded-xl shadow-2xl p-8">
+            <!-- Duration Dropdown -->
+        
             <!-- Slide 1: Welcome -->
             <div class="slide absolute inset-0 p-8 transition-opacity duration-500" id="slide-1">
+                                    <form method="GET" action="{% url 'user_dashboard' %}" class="absolute top-4 right-4">
+                <label for="duration" class="text-white font-semibold mr-2">Select Duration:</label>
+                <select name="duration" id="duration" class="bg-spotify-dark text-white p-2 rounded-md" onchange="this.form.submit()">
+                    <option value="month" {% if selected_duration == 'month' %}selected{% endif %}>Last Month</option>
+                    <option value="6_months" {% if selected_duration == '6_months' %}selected{% endif %}>Last 6 Months</option>
+                    <option value="year" {% if selected_duration == 'year' %}selected{% endif %}>Last Year</option>
+                </select>
+            </form>
                 <div class="h-full flex flex-col justify-center items-center text-center">
                     <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.0.title }}</h2>
                     <p class="text-2xl text-white mb-8">{{ slides.0.content }}</p>
@@ -24,6 +34,7 @@
                             class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full text-xl transition duration-300">
                         Let's Go!
                     </button>
+                
                 </div>
             </div>
 

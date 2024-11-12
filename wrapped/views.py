@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from wrapped.models import Profile
+from django.utils import timezone
 
 from .templates.forms import CreateUserForm
 
@@ -98,24 +99,24 @@ def spotify_logout(request):
     return redirect("home")
 
 
-def spotify_callback(request):
-    code = request.GET.get("code")
-    token_url = "https://accounts.spotify.com/api/token"
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    data = {
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": settings.SPOTIFY_REDIRECT_URI,
-        "client_id": settings.SPOTIFY_CLIENT_ID,
-        "client_secret": settings.SPOTIFY_CLIENT_SECRET,
-    }
-    response = requests.post(token_url, headers=headers, data=data)
-    token_info = response.json()
-
-    # Save tokens in session
-    request.session["access_token"] = token_info.get("access_token")
-    request.session["refresh_token"] = token_info.get("refresh_token")
-    return redirect("user_dashboard")
+# def spotify_callback(request):
+#     code = request.GET.get("code")
+#     token_url = "https://accounts.spotify.com/api/token"
+#     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+#     data = {
+#         "grant_type": "authorization_code",
+#         "code": code,
+#         "redirect_uri": settings.SPOTIFY_REDIRECT_URI,
+#         "client_id": settings.SPOTIFY_CLIENT_ID,
+#         "client_secret": settings.SPOTIFY_CLIENT_SECRET,
+#     }
+#     response = requests.post(token_url, headers=headers, data=data)
+#     token_info = response.json()
+#
+#     # Save tokens in session
+#     request.session["access_token"] = token_info.get("access_token")
+#     request.session["refresh_token"] = token_info.get("refresh_token")
+#     return redirect("user_dashboard")
 
 
 def refresh_token(request):
@@ -145,20 +146,48 @@ from .models import SpotifyWrappedData
 # ... keep your existing imports and other functions ...
 
 def user_dashboard(request):
-    access_token = request.session.get("access_token")
-    if access_token is None:
-        return redirect("home")
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    profile = request.user.profile
+
+    # Check if the user has connected their Spotify account before
+    if not profile.spotify_access_token:
+        return redirect("spotify_login")  # Redirect to connect Spotify if no access token is present
+
+    # Check if the token is expired, and refresh if needed
+    if profile.token_expiry and profile.token_expiry < timezone.now():
+        access_token = refresh_spotify_token(profile)
+        if access_token is None:
+            return redirect("spotify_login")  # Redirect to reconnect if refreshing fails
+    else:
+        access_token = profile.spotify_access_token
+
+    # Read the duration parameter from the GET request
+    duration = request.GET.get("duration", "year")  # Default to "year" if no duration is selected
+    time_range_map = {
+        "month": "short_term",
+        "6_months": "medium_term",
+        "year": "long_term",
+    }
+    selected_time_range = time_range_map.get(duration, "long_term")
 
     headers = {"Authorization": f"Bearer {access_token}"}
 
+    # access_token = request.session.get("access_token")
+    # if access_token is None:
+    #     return redirect("home")
+    #
+    # headers = {"Authorization": f"Bearer {access_token}"}
+
     # Fetch basic data first
     top_tracks = requests.get(
-        "https://api.spotify.com/v1/me/top/tracks?limit=5", headers=headers
+        f"https://api.spotify.com/v1/me/top/tracks?time_range={selected_time_range}&limit=5", headers=headers
     ).json().get("items", [])
 
     # Fetch top artists with their detailed data
     top_artists_response = requests.get(
-        "https://api.spotify.com/v1/me/top/artists?limit=5", headers=headers
+        f"https://api.spotify.com/v1/me/top/artists?time_range={selected_time_range}&limit=5", headers=headers
     ).json().get("items", [])
 
     # Enhance artist data with their top tracks
@@ -184,9 +213,10 @@ def user_dashboard(request):
         )
 
         # Convert to hours and minutes
-        artist_minutes = artist_time_ms / (1000 * 60)
-        artist_hours = int(artist_minutes // 60)
-        artist_mins = int(artist_minutes % 60)
+        # artist_minutes = artist_time_ms / (1000 * 60)
+        # artist_hours = int(artist_minutes // 60)
+        # artist_mins = int(artist_minutes % 60)
+        artist_hours, artist_mins = divmod(artist_time_ms // 1000 // 60, 60)
 
         # Add enhanced data to artist object
         artist.update({
@@ -215,9 +245,8 @@ def user_dashboard(request):
     top_genres = sorted(genre_count.items(), key=lambda x: x[1], reverse=True)[:5]
 
     # Calculate Total Time Listened
-    total_time_ms = sum(track["track"]["duration_ms"] for track in recent_tracks)
-    total_time_sec = total_time_ms / 1000
-    total_time_min = total_time_sec / 60
+    total_time_ms = sum(track["duration_ms"] for track in top_tracks)
+    total_time_min = total_time_ms / (1000 * 60)
     hours = int(total_time_min // 60)
     minutes = int(total_time_min % 60)
     total_time_listened = f"{hours} hrs {minutes} mins"
@@ -253,38 +282,30 @@ def user_dashboard(request):
             "title": "Welcome",
             "items": [],
             "content": "Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!"
-        },
-        {
+        }, {
             "title": "Top Tracks",
             "items": top_tracks
-        },
-        {
+        }, {
             "title": "Top Artists",
             "items": top_artists,  # Now includes top_tracks and listening_time
             "artist_details": True  # Flag to indicate this slide has detailed artist data
-        },
-        {
+        }, {
             "title": "Recently Played",
             "items": recent_tracks
-        },
-        {
+        }, {
             "title": "Top Genres",
             "items": top_genres
-        },
-        {
+        }, {
             "title": "Track Popularity",
             "items": top_track_popularity
-        },
-        {
+        }, {
             "title": "Artist Followers",
             "items": artist_followers
-        },
-        {
+        }, {
             "title": "Total Time Listened",
             "items": [],
             "content": total_time_listened
-        },
-        {
+        }, {
             "title": "Thanks",
             "items": [],
             "content": "That's a wrap on your Spotify highlights!"
@@ -306,7 +327,8 @@ def user_dashboard(request):
 
     context = {
         "slides": slides,
-        'wrapped_id': wrapped_id
+        'wrapped_id': wrapped_id,
+        "selected_duration": duration
     }
     return render(request, "wrapped/dashboard.html", context)
 
@@ -324,6 +346,67 @@ def shareable_page(request, wrapped_id):
     }
     return render(request, "wrapped/shareable.html", context)
 
+import requests
+from django.conf import settings
 
+def refresh_spotify_token(profile):
+    refresh_token = profile.spotify_refresh_token
+    token_url = "https://accounts.spotify.com/api/token"
+    response = requests.post(
+        token_url,
+        data={
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token,
+            "client_id": settings.SPOTIFY_CLIENT_ID,
+            "client_secret": settings.SPOTIFY_CLIENT_SECRET,
+        },
+    )
 
+    if response.status_code == 200:
+        tokens = response.json()
+        profile.spotify_access_token = tokens.get("access_token")
+        expires_in = tokens.get("expires_in")
+        profile.token_expiry = timezone.now() + timezone.timedelta(seconds=expires_in)
+        profile.save()
+        return profile.spotify_access_token
+    else:
+        return None
+
+def spotify_callback(request):
+    # Get authorization code from query parameters
+    code = request.GET.get("code")
+    if not code:
+        return redirect("home")  # Handle error if code is not provided
+
+    # Exchange authorization code for access and refresh tokens
+    token_url = "https://accounts.spotify.com/api/token"
+    response = requests.post(
+        token_url,
+        data={
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": settings.SPOTIFY_REDIRECT_URI,
+            "client_id": settings.SPOTIFY_CLIENT_ID,
+            "client_secret": settings.SPOTIFY_CLIENT_SECRET,
+        },
+    )
+
+    if response.status_code == 200:
+        tokens = response.json()
+        access_token = tokens.get("access_token")
+        refresh_token = tokens.get("refresh_token")
+        expires_in = tokens.get("expires_in")
+
+        # Save tokens and expiry in user profile
+        profile = request.user.profile
+        profile.spotify_access_token = access_token
+        profile.spotify_refresh_token = refresh_token
+        profile.token_expiry = timezone.now() + timezone.timedelta(seconds=expires_in)
+        profile.save()
+
+        # Redirect to dashboard after successful connection
+        return redirect("user_dashboard")
+    else:
+        # Handle error if token exchange fails
+        return redirect("home")
 
