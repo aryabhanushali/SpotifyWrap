@@ -6,6 +6,9 @@ class Profile(models.Model):
     spotify_user_id = models.CharField(max_length=255, blank=True, null=True)
     spotify_access_token = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+
 class SpotifyWrappedData(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     wrapped_id = models.CharField(max_length=10, unique=True)

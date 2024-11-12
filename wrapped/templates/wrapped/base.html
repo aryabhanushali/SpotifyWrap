@@ -85,7 +85,7 @@
                 {% if user.is_authenticated %}
                 <div class="flex items-center space-x-4">
                     <span class="text-gray-300">Hello, {{ user.username }}</span>
-                    <a href="{% url 'spotify_logout' %}" 
+                    <a href="{% url 'logout' %}" 
                        class="btn-spotify-outline text-sm">
                         Log Out
                     </a>

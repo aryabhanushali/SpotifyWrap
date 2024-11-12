@@ -7,12 +7,75 @@ import datetime
 import random
 import string
 from .models import SpotifyWrappedData
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from wrapped.models import Profile
+
+from .templates.forms import CreateUserForm
 
 
 # Create your views here.
 def home(request):
     return render(request, "wrapped/home.html")
+@csrf_protect
+def loginPage(request):
 
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+        else:
+            messages.info(request, "Username or password is incorrect")
+
+    context = {}
+    return render(request, "wrapped/login.html", context)
+@csrf_protect
+def create_account(request):
+    if request.user.is_authenticated:
+        return redirect("home")
+    else:
+        form = CreateUserForm()
+
+        if request.method == "POST":
+            form = CreateUserForm(request.POST)
+            print(request.POST)
+
+            #print(favoriteCuisine)
+            if form.is_valid():
+                form.save()
+                user = authenticate(request, username=request.POST.get("username"), password=request.POST.get("password1"))
+
+                profile = Profile(user=user)
+                profile.save()
+
+                base_url = reverse('login')
+                query_string = urlencode({'user': user})
+                url = '{}?{}'.format(base_url, query_string)
+                return redirect(url)
+            else:
+                if len(request.POST.get("password1")) < 8:
+                    messages.info(request, "Password must be at least 8 characters")
+                elif request.POST.get("password1").isdigit():
+                    messages.info(request, "Password cannot be only numerical")
+                else:
+                    error_str = ''.join([f'{value} ' for key, value in form.error_messages.items()]).strip()
+                    messages.info(request, error_str)
+                    print(error_str)
+
+        context = {"form" : form}
+        return render(request, "wrapped/create_account.html", context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect("login")
 
 def spotify_login(request):
     auth_url = "https://accounts.spotify.com/authorize"

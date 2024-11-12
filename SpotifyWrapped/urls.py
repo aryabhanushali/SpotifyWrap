@@ -21,7 +21,10 @@ from wrapped import views
 
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path("", views.loginPage, name="login"),
+    path("home/", views.home, name="home"),
+    path("createaccount/", views.create_account, name="create account"),
+    path("logout/", views.logoutUser, name="logout"),
     path("spotify/login/", views.spotify_login, name="spotify_login"),
     path("spotify/callback/", views.spotify_callback, name="spotify_callback"),
     path("dashboard/", views.user_dashboard, name="user_dashboard"),
