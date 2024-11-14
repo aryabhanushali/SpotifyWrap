@@ -12,6 +12,24 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.db import IntegrityError
 import datetime
+from django.shortcuts import get_object_or_404
+
+def user_dashboard(request):
+    # Ensure the user is authenticated
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Retrieve the Profile object associated with the current user
+    profile = get_object_or_404(Profile, user=request.user)
+
+    # Now you can use `profile` to render dashboard data or pass it to the template
+    context = {
+        'spotify_access_token': profile.spotify_access_token,
+        # Add any other data you want to show on the dashboard
+    }
+
+    return render(request, 'dashboard.html', context)
+
 import random
 import string
 from .models import SpotifyWrappedData, Profile
@@ -65,6 +83,9 @@ def spotify_callback(request):
 
     if not access_token:
         return HttpResponse('Error: No access token received', status=400)
+
+    request.session['access_token'] = access_token
+    request.session['refresh_token'] = data.get('refresh_token')
 
     # Request user data from Spotify using the access token
     user_data = requests.get(
@@ -126,11 +147,17 @@ def refresh_token(request):
     token_info = response.json()
     request.session["access_token"] = token_info.get("access_token")
 
-
 def user_dashboard(request):
-    profile = Profile.objects.get(user=request.user)
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    profile = get_object_or_404(Profile, user=request.user)
 
     access_token = request.session.get("access_token")
+    if not access_token:
+        refresh_token(request)
+        access_token = request.session.get("access_token")
+
     if access_token is None:
         return redirect("home")
 
@@ -277,7 +304,7 @@ def user_dashboard(request):
     ]
     #store in database
     SpotifyWrappedData.objects.create(
-        user=profile,
+        user= profile,
         wrapped_id=wrapped_id,
         top_tracks=top_tracks,
         top_artists=top_artists,
@@ -286,7 +313,11 @@ def user_dashboard(request):
     )
     context = {"slides": slides,
                'wrapped_id': wrapped_id}
-    return render(request, "wrapped/dashboard.html", context)
+    started = request.GET.get('started') == 'true'
+    if started:
+        return render(request, "wrapped/dashboard.html")
+    else:
+        return render(request, "wrapped/home.html", context)
 
 
 def shareable_page(request, wrapped_id):
@@ -311,6 +342,3 @@ def view_old_wrappeds(request):
         "past_wrapped_summaries": past_wrapped_summaries,
     }
     return render(request, "wrapped/old_wrappeds.html", context)
-
-
-
