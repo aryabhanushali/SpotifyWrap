@@ -1,0 +1,35 @@
+/* Existing Slide Styles */
+.slide-container {
+    max-width: 600px;
+    margin: auto;
+    position: relative;
+    text-align: center;
+}
+
+.slide {
+    display: none; /* Hide all slides by default */
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #f4f4f4;
+}
+
+.slide h2 {
+    color: #333;
+    font-size: 24px;
+}
+
+.slide-controls button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #1DB954; /* Spotify green */
+    color: #fff;
+}
+
+.slide-controls button:hover {
+    background-color: #14833b;
+}
+

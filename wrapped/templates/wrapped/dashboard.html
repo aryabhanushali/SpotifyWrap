@@ -1,17 +1,119 @@
-<!-- templates/myapp/dashboard.html -->
-<h1>Your Spotify Wrapped</h1>
-<a href="{% url 'spotify_logout' %}" class="btn btn-danger">Log Out</a>
+{% extends "wrapped/base.html" %}
 
-<h2>Top Tracks</h2>
-<ul>
-  {% for track in top_tracks %}
-  <li>{{ track.name }} by {{ track.artists|join:", " }}</li>
-  {% endfor %}
-</ul>
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-spotify-black to-spotify-dark">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold text-white">Your Spotify Wrapped</h1>
+            <a href="{% url 'spotify_logout' %}"
+               class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition duration-300">
+                Log Out
+            </a>
+        </div>
 
-<h2>Top Artists</h2>
-<ul>
-  {% for artist in top_artists %}
-  <li>{{ artist.name }}</li>
-  {% endfor %}
-</ul>
+        <!-- Slides Container -->
+        <div class="relative min-h-[600px] bg-spotify-card rounded-xl shadow-2xl p-8">
+            <!-- Slide 1: Welcome -->
+            <div class="slide absolute inset-0 p-8 transition-opacity duration-500" id="slide-1">
+                <div class="h-full flex flex-col justify-center items-center text-center">
+                    <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.0.title }}</h2>
+                    <p class="text-2xl text-white mb-8">{{ slides.0.content }}</p>
+                    <button onclick="showSlide(2);"
+                            class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full text-xl transition duration-300">
+                        Let's Go!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slide 2: Top Tracks -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-2">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.1.title }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for track in slides.1.items %}
+                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                        {% if track.album.images.0.url %}
+                        <img src="{{ track.album.images.0.url }}"
+                             alt="{{ track.name }}"
+                             class="w-20 h-20 rounded-md shadow-lg">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="text-white font-semibold">{{ track.name }}</h3>
+                            <p class="text-gray-400">{{ track.artists.0.name }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(1);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(3);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Similar structure for other slides... -->
+
+            <!-- Final Slide -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-9">
+                <div class="h-full flex flex-col justify-center items-center text-center">
+                    <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.8.title }}</h2>
+                    <p class="text-2xl text-white mb-8">{{ slides.8.content }}</p>
+
+                    <div class="social-share mt-8">
+                        <h3 class="text-xl text-white mb-4">Share Your Wrapped:</h3>
+                        {% if wrapped_id %}
+                            <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}"
+                                target="_blank"
+                                class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
+                                View and Share Link
+                            </a>
+                        {% else %}
+                            <p class="text-white">Unable to generate shareable link at this time.</p>
+                        {% endif %}
+                    </div>
+
+                    <button onclick="showSlide(8);"
+                            class="mt-8 text-gray-400 hover:text-white transition duration-300">
+                        ← Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .slide {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .slide.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .slide-nav-btn {
+        @apply bg-spotify-green hover:bg-spotify-green-dark text-white px-6 py-2 rounded-full transition duration-300;
+    }
+</style>
+
+<script>
+function showSlide(slideNumber) {
+    const slides = document.querySelectorAll(".slide");
+    slides.forEach(slide => {
+        slide.classList.remove('active');
+        slide.style.display = 'none';
+        setTimeout(() => {
+            if (slide.id === `slide-${slideNumber}`) {
+                slide.style.display = 'block';
+                setTimeout(() => slide.classList.add('active'), 50);
+            }
+        }, 500);
+    });
+}
+
+// Show first slide on load
+document.addEventListener('DOMContentLoaded', () => {
+    showSlide(1);
+});
+</script>
+{% endblock %}

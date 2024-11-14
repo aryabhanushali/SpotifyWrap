@@ -19,10 +19,15 @@ from django.contrib import admin
 from django.urls import path
 from wrapped import views
 
+
 urlpatterns = [
     path("", views.home, name="home"),
     path("spotify/login/", views.spotify_login, name="spotify_login"),
     path("spotify/callback/", views.spotify_callback, name="spotify_callback"),
     path("dashboard/", views.user_dashboard, name="user_dashboard"),
     path("spotify/logout/", views.spotify_logout, name="spotify_logout"),
+
+    path("wrapped/<str:wrapped_id>/", views.shareable_page, name="shareable_page"),
+    path("old_wrappeds/", views.view_old_wrappeds, name="view_old_wrappeds"),
+
 ]
