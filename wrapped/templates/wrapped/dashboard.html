@@ -60,15 +60,9 @@
 
                     <div class="social-share mt-8">
                         <h3 class="text-xl text-white mb-4">Share Your Wrapped:</h3>
-                        {% if wrapped_id %}
-                            <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}"
-                                target="_blank"
-                                class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
-                                View and Share Link
-                            </a>
-                        {% else %}
-                            <p class="text-white">Unable to generate shareable link at this time.</p>
-                        {% endif %}
+                        <a href="{{ shareable_page_url }}" target="_blank" class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
+                            View and Share Link
+                        </a>
                     </div>
 
                     <button onclick="showSlide(8);"
