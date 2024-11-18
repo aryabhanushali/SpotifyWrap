@@ -14,4 +14,5 @@ class SpotifyWrappedData(models.Model):
     top_genres = models.JSONField()  # Store genre data as JSON
     total_time_listened = models.IntegerField()  # Store total time listened
     created_at = models.DateTimeField(auto_now_add=True)
+    custom_name = models.CharField(max_length=255, blank=True, null=True)
 

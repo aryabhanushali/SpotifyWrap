@@ -52,28 +52,47 @@
 
             <!-- Similar structure for other slides... -->
 
-            <!-- Final Slide -->
-            <div class="slide hidden absolute inset-0 p-8" id="slide-9">
-                <div class="h-full flex flex-col justify-center items-center text-center">
-                    <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.8.title }}</h2>
-                    <p class="text-2xl text-white mb-8">{{ slides.8.content }}</p>
+       <!-- Final Slide -->
+<div class="slide hidden absolute inset-0 p-8" id="slide-9">
+    <div class="h-full flex flex-col justify-center items-center text-center">
+        <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.8.title }}</h2>
+        <p class="text-2xl text-white mb-8">{{ slides.8.content }}</p>
 
-                    <div class="social-share mt-8">
-                        <h3 class="text-xl text-white mb-4">Share Your Wrapped:</h3>
-                        <a href="{{ shareable_page_url }}" target="_blank" class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
-                            View and Share Link
-                        </a>
-                    </div>
+        <div class="save-wrap mt-8">
+            <h3 class="text-xl text-white mb-4">Do you want to save your Wrapped?</h3>
+            <form method="POST" action="{% url 'user_dashboard' %}">
+                {% csrf_token %}
+                <label for="custom_name" class="block text-lg text-white mb-2">Enter a name for your Wrapped here!:</label>
+                <input
+                    type="text"
+                    id="custom_name"
+                    name="custom_name"
+                    class="px-4 py-2 w-64 rounded-md text-gray-900"
+                    placeholder="e.g., My 2024 Wrapped"
+                    required>
 
-                    <button onclick="showSlide(8);"
-                            class="mt-8 text-gray-400 hover:text-white transition duration-300">
-                        ← Back
-                    </button>
-                </div>
-            </div>
+                <button type="submit"
+                        class="mt-4 bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
+                    Save
+                </button>
+            </form>
         </div>
+
+        <div class="social-share mt-8">
+            <h3 class="text-xl text-white mb-4">Or share your Wrapped:</h3>
+            <a href="{{ shareable_page_url }}" target="_blank"
+               class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
+                View and Share Link
+            </a>
+        </div>
+
+        <button onclick="showSlide(8);"
+                class="mt-8 text-gray-400 hover:text-white transition duration-300">
+            ← Back
+        </button>
     </div>
 </div>
+
 
 <style>
     .slide {
