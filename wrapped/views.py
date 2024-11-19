@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.db import IntegrityError
+from django.urls import reverse
 import datetime
 from django.shortcuts import get_object_or_404
 
@@ -147,6 +148,7 @@ def refresh_token(request):
     token_info = response.json()
     request.session["access_token"] = token_info.get("access_token")
 
+
 def user_dashboard(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -224,6 +226,7 @@ def user_dashboard(request):
     for artist in top_artists:
         for genre in artist.get("genres", []):
             genre_count[genre] = genre_count.get(genre, 0) + 1
+
     top_genres = sorted(genre_count.items(), key=lambda x: x[1], reverse=True)[:5]
 
     # Calculate Total Time Listened
@@ -311,11 +314,15 @@ def user_dashboard(request):
         top_genres=top_genres,
         total_time_listened=int(total_time_min),
     )
+    shareable_page_url = reverse('shareable_page', kwargs={'wrapped_id': wrapped_id})
+    print(f"Saving wrapped_id: {wrapped_id}")
     context = {"slides": slides,
-               'wrapped_id': wrapped_id}
+               'wrapped_id': wrapped_id,
+               'shareable_page_url': shareable_page_url,
+               }
     started = request.GET.get('started') == 'true'
     if started:
-        return render(request, "wrapped/dashboard.html")
+        return render(request, "wrapped/dashboard.html", context)
     else:
         return render(request, "wrapped/home.html", context)
 
@@ -324,7 +331,7 @@ def shareable_page(request, wrapped_id):
     try:
         wrapped_data = SpotifyWrappedData.objects.get(wrapped_id=wrapped_id)
     except SpotifyWrappedData.DoesNotExist:
-        return render(request, "wrapped/not_found.html")  # Error page if ID is invalid
+        return render(request, "home")  # Error page if ID is invalid
 
     context = {
         "top_tracks": wrapped_data.top_tracks,

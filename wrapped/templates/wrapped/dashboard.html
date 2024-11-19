@@ -50,7 +50,140 @@
                 </div>
             </div>
 
-            <!-- Similar structure for other slides... -->
+            <!-- Slide 3: Top Artists -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-3">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.2.title }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for artist in slides.2.items %}
+                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                        {% if artist.images.0.url %}
+                        <img src="{{ artist.images.0.url }}"
+                             alt="{{ artist.name }}"
+                             class="w-20 h-20 rounded-md shadow-lg">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="text-white font-semibold">{{ artist.name }}</h3>
+                            <p class="text-gray-400">Top Tracks:</p>
+                            <ul class="text-gray-400 text-sm">
+                                {% for track in artist.top_tracks %}
+                                <li>- {{ track.name }}</li>
+                                {% endfor %}
+                            </ul>
+                            <p class="text-gray-400 mt-2">Listening Time: {{ artist.listening_time.hours }} hrs {{ artist.listening_time.minutes }} mins</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(2);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(4);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 4: Recently Played -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-4">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.3.title }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for track in slides.3.items %}
+                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                        {% if track.track.album.images.0.url %}
+                        <img src="{{ track.track.album.images.0.url }}"
+                             alt="{{ track.track.name }}"
+                             class="w-20 h-20 rounded-md shadow-lg">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="text-white font-semibold">{{ track.track.name }}</h3>
+                            <p class="text-gray-400">{{ track.track.artists.0.name }}</p>
+                            <p class="text-gray-400 text-sm">{{ track.played_at|date:"Y-m-d H:i" }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(3);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(5);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 5: Top Genres -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-5">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.4.title }}</h2>
+                <ul class="text-white text-lg">
+                    {% for genre, count in slides.4.items %}
+                    <li class="mb-4">
+                        <span class="text-spotify-green font-semibold">{{ genre }}</span>: {{ count }} artists
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(4);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(6);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 6: Track Popularity -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-6">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.5.title }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for track in slides.5.items %}
+                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                        {% if track.image %}
+                        <img src="{{ track.image }}"
+                             alt="{{ track.name }}"
+                             class="w-20 h-20 rounded-md shadow-lg">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="text-white font-semibold">{{ track.name }}</h3>
+                            <p class="text-gray-400">Popularity: {{ track.popularity }}%</p>
+                            {% if track.preview_url %}
+                            <audio controls class="mt-2">
+                                <source src="{{ track.preview_url }}" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(5);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(7);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 7: Artist Followers -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-7">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.6.title }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for artist in slides.6.items %}
+                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                        {% if artist.image %}
+                        <img src="{{ artist.image }}"
+                             alt="{{ artist.name }}"
+                             class="w-20 h-20 rounded-md shadow-lg">
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="text-white font-semibold">{{ artist.name }}</h3>
+                            <p class="text-gray-400">Followers: {{ artist.followers}}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(6);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(8);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
+
+            <!-- Slide 8: Total Time Listened -->
+            <div class="slide hidden absolute inset-0 p-8" id="slide-8">
+                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.7.title }}</h2>
+                <p class="text-2xl text-white">{{ slides.7.content }}</p>
+                <div class="flex justify-between mt-8">
+                    <button onclick="showSlide(7);" class="slide-nav-btn">Previous</button>
+                    <button onclick="showSlide(9);" class="slide-nav-btn">Next</button>
+                </div>
+            </div>
 
             <!-- Final Slide -->
             <div class="slide hidden absolute inset-0 p-8" id="slide-9">
@@ -60,15 +193,9 @@
 
                     <div class="social-share mt-8">
                         <h3 class="text-xl text-white mb-4">Share Your Wrapped:</h3>
-                        {% if wrapped_id %}
-                            <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}"
-                                target="_blank"
-                                class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
-                                View and Share Link
-                            </a>
-                        {% else %}
-                            <p class="text-white">Unable to generate shareable link at this time.</p>
-                        {% endif %}
+                        <a href="{{ shareable_page_url }}" target="_blank" class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
+                            View and Share Link
+                        </a>
                     </div>
 
                     <button onclick="showSlide(8);"
