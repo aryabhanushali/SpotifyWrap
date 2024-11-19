@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            spotifyGreen: '#1DB954',
+            spotifyGreenDark: '#1AA34A',
+            spotifyBlack: '#121212',
+            spotifyDark: '#181818',
+          }
+        }
+      }
+    }
+  </script>
+  <title>Contact Developers - Spotify Wrapped</title>
+</head>
+<body class="min-h-screen flex flex-col bg-spotifyBlack text-white">
+
+  <!-- Navigation Bar -->
+  <nav class="flex justify-between items-center p-6 bg-spotifyGreen">
+    <h1 class="text-3xl font-bold">Spotify Wrapped</h1>
+    <div class="space-x-8">
+      <a href="#" class="text-lg font-medium hover:underline">My Account</a>
+      <a href="#" class="text-lg font-medium hover:underline">My Wrapped</a>
+      <a href="#" class="text-lg font-medium hover:underline">Contact Developers</a>
+      <a href="#" class="text-lg font-medium hover:underline">Log Out</a>
+    </div>
+  </nav>
+
+  <!-- Contact Developers Section -->
+  <section class="flex justify-center items-center px-4 py-12 bg-gray-900">
+    <div class="w-full max-w-3xl">
+      <h2 class="text-4xl font-bold text-spotifyGreen mb-6 text-center">Contact Developers</h2>
+      <p class="text-gray-300 text-center mb-8">
+        Have questions, feedback, or need assistance? Reach out to our development team, and we'll get back to you as soon as possible.
+      </p>
+
+      <!-- Row for 5 Names and Emails -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <!-- Name and Email Inputs for Each Developer -->
+        <div class="space-y-4">
+          <input type="text" placeholder="Name 1" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+          <input type="email" placeholder="Email 1" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+        </div>
+        <div class="space-y-4">
+          <input type="text" placeholder="Name 2" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+          <input type="email" placeholder="Email 2" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+        </div>
+        <div class="space-y-4">
+          <input type="text" placeholder="Name 3" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+          <input type="email" placeholder="Email 3" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+        </div>
+        <div class="space-y-4">
+          <input type="text" placeholder="Name 4" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+          <input type="email" placeholder="Email 4" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+        </div>
+        <div class="space-y-4">
+          <input type="text" placeholder="Name 5" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+          <input type="email" placeholder="Email 5" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen">
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <form action="#" method="POST" class="space-y-6">
+        <input type="text" name="name" placeholder="Your Name" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen" required>
+        <input type="email" name="email" placeholder="Your Email" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white focus:outline-none focus:ring-2 focus:ring-spotifyGreen" required>
+        <textarea name="message" placeholder="Your Message" class="w-full px-4 py-2 rounded-md bg-spotifyDark text-white h-32 focus:outline-none focus:ring-2 focus:ring-spotifyGreen" required></textarea>
+        <button type="submit" class="w-full bg-spotifyGreen hover:bg-spotifyGreenDark text-white px-6 py-3 rounded-full font-semibold transition duration-300">
+          Send Message
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black p-4 text-center text-gray-500">
+    <p>&copy; 2024 Spotify Wrapped. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
