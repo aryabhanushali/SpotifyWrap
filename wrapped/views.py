@@ -11,9 +11,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.db import IntegrityError
-from django.urls import reverse
 import datetime
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
+from django import forms
+from .models import SpotifyWrappedData
 
 def user_dashboard(request):
     # Ensure the user is authenticated
@@ -305,17 +307,23 @@ def user_dashboard(request):
             "content": "That's a wrap on your Spotify highlights!"
         }
     ]
-    #store in database
-    SpotifyWrappedData.objects.create(
-        user= profile,
-        wrapped_id=wrapped_id,
-        top_tracks=top_tracks,
-        top_artists=top_artists,
-        top_genres=top_genres,
-        total_time_listened=int(total_time_min),
-    )
     shareable_page_url = reverse('shareable_page', kwargs={'wrapped_id': wrapped_id})
-    print(f"Saving wrapped_id: {wrapped_id}")
+    if request.method == "POST":
+        form = SaveWrapsForm(request.POST)
+        if form.is_valid():
+            custom_name = form.cleaned_data["custom_name"]
+            SpotifyWrappedData.objects.create(
+                user=profile,
+                wrapped_id=wrapped_id,
+                top_tracks=top_tracks,
+                top_artists=top_artists,
+                top_genres=top_genres,
+                total_time_listened=int(total_time_min),
+                custom_name=custom_name,
+            )
+            return redirect('shareable_page', wrapped_id=wrapped_id)
+    else:
+        form = SaveWrapsForm()
     context = {"slides": slides,
                'wrapped_id': wrapped_id,
                'shareable_page_url': shareable_page_url,
@@ -325,7 +333,6 @@ def user_dashboard(request):
         return render(request, "wrapped/dashboard.html", context)
     else:
         return render(request, "wrapped/home.html", context)
-
 
 def shareable_page(request, wrapped_id):
     try:
@@ -349,3 +356,5 @@ def view_old_wrappeds(request):
         "past_wrapped_summaries": past_wrapped_summaries,
     }
     return render(request, "wrapped/old_wrappeds.html", context)
+class SaveWrapsForm(forms.Form):
+    custom_name = forms.CharField(max_length=255, label="Name your wrap!")

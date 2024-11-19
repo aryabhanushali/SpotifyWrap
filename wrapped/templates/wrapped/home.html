@@ -32,13 +32,13 @@
             </p>
             <div class="space-y-4">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'view_old_wrappeds' %}"
+                    <a href="{% url 'user_dashboard' %}?started=true"
                        class="btn-spotify inline-flex items-center text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300"
                        data-loading>
                         <svg class="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2z"/>
                         </svg>
-                        View Previous Spotify Wrapped
+                        Ready to see your Wrapped?
                     </a>
                 {% else %}
                     <a href="{% url 'spotify_login' %}"
@@ -111,19 +111,19 @@
     </section>
 
     <!-- CTA Section -->
+    {% if user.is_authenticated %}
     <section class="py-20 bg-spotify-black text-center">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-white">Ready to See Your Wrapped?</h2>
-            <p class="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-                Connect your Spotify account to start exploring your personalized music insights
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-white">Want a deep dive into your listening history?.</h2>
             </p>
-            <a href="{% url 'user_dashboard' %}?started=true"
+            <a href="{% url 'view_old_wrappeds' %}
                class="btn-spotify-outline text-lg inline-flex items-center"
                data-loading>
-                Get Started →
+                View Previous Spotify Wraps here.
             </a>
         </div>
     </section>
+    {% endif %}
 </div>
 
 {% block extra_head %}

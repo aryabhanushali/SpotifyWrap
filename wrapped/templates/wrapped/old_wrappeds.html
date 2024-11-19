@@ -12,7 +12,7 @@
             {% for wrapped in past_wrapped_summaries %}
                 <li>
                     <a href="{% url 'shareable_page' wrapped.wrapped_id %}">
-                        Wrapped from {{ wrapped.created_at|date:"F j, Y" }} - Total Time Listened: {{ wrapped.total_time_listened }} minutes
+                        Wrapped from {{ wrapped.created_at|date:"F j, Y" }} - {{wrapped.custom_name}}
                     </a>
                 </li>
             {% endfor %}
