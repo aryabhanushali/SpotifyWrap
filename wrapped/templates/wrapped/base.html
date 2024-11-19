@@ -24,35 +24,35 @@
     <style type="text/tailwindcss">
         @layer components {
             .btn-spotify {
-                @apply bg-spotify-green text-white px-6 py-3 rounded-full
-                       hover:bg-spotify-green-dark transition duration-300
+                @apply bg-spotify-green text-white px-6 py-3 rounded-full 
+                       hover:bg-spotify-green-dark transition duration-300 
                        font-semibold text-center inline-block;
             }
             .btn-spotify-outline {
-                @apply border-2 border-spotify-green text-spotify-green px-6 py-3
-                       rounded-full hover:bg-spotify-green hover:text-white
+                @apply border-2 border-spotify-green text-spotify-green px-6 py-3 
+                       rounded-full hover:bg-spotify-green hover:text-white 
                        transition duration-300 font-semibold text-center inline-block;
             }
             .card {
-                @apply bg-spotify-dark-card rounded-lg p-6
+                @apply bg-spotify-dark-card rounded-lg p-6 
                        hover:bg-spotify-hover transition duration-300;
             }
         }
-
+        
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
-
+        
         ::-webkit-scrollbar-track {
             background: #121212;
         }
-
+        
         ::-webkit-scrollbar-thumb {
             background: #1DB954;
             border-radius: 4px;
         }
-
+        
         ::-webkit-scrollbar-thumb:hover {
             background: #1aa34a;
         }
@@ -62,18 +62,13 @@
             from { width: 0; }
             to { width: var(--progress-width); }
         }
-
+        
         .progress-bar-fill {
             animation: progressFill 1.5s ease-out forwards;
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<<<<<<< HEAD
-<body>
-    <div class="container mx-auto">
-        <h1 class="text-3xl font-bold">Spotify Wrapped</h1>
-=======
 <body class="bg-spotify-black text-white min-h-screen">
     <!-- Navigation -->
     <nav class="bg-spotify-dark shadow-lg">
@@ -86,11 +81,11 @@
                     </svg>
                     <span class="text-xl font-bold">Spotify Wrapped</span>
                 </a>
-
+                
                 {% if user.is_authenticated %}
                 <div class="flex items-center space-x-4">
                     <span class="text-gray-300">Hello, {{ user.username }}</span>
-                    <a href="{% url 'spotify_logout' %}"
+                    <a href="{% url 'spotify_logout' %}" 
                        class="btn-spotify-outline text-sm">
                         Log Out
                     </a>
@@ -105,7 +100,7 @@
         {% if messages %}
         <div class="container mx-auto px-4 mt-4">
             {% for message in messages %}
-            <div class="bg-spotify-dark-card text-white px-6 py-4 rounded-lg mb-4
+            <div class="bg-spotify-dark-card text-white px-6 py-4 rounded-lg mb-4 
                         {% if message.tags %}{{ message.tags }}{% endif %}">
                 {{ message }}
             </div>
@@ -113,7 +108,6 @@
         </div>
         {% endif %}
 
->>>>>>> sruthi
         {% block content %}{% endblock %}
     </main>
 
@@ -128,7 +122,7 @@
     </footer>
 
     <!-- Loading Overlay -->
-    <div id="loading-overlay"
+    <div id="loading-overlay" 
          class="fixed inset-0 bg-spotify-black bg-opacity-90 hidden items-center justify-center z-50">
         <div class="text-center">
             <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-spotify-green"></div>
@@ -142,7 +136,7 @@
             document.getElementById('loading-overlay').classList.remove('hidden');
             document.getElementById('loading-overlay').classList.add('flex');
         }
-
+        
         function hideLoading() {
             document.getElementById('loading-overlay').classList.add('hidden');
             document.getElementById('loading-overlay').classList.remove('flex');
@@ -162,3 +156,4 @@
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>
+
