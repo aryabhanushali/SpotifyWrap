@@ -207,13 +207,37 @@
             </form>
         </div>
 
-        <div class="social-share mt-8">
-            <h3 class="text-xl text-white mb-4">Or share your Wrapped:</h3>
-            <a href="{{ shareable_page }}" target="_blank"
-               class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
-                View and Share Link
-            </a>
-        </div>
+<div class="social-share mt-8">
+    <h3 class="text-xl text-white mb-4">Or share your Wrapped:</h3>
+    <div class="flex justify-center space-x-8">
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/accounts/login/"
+           target="_blank"
+           class="text-white hover:text-spotify-green transition duration-300">
+            <i class="fab fa-instagram text-5xl"></i>
+        </a>
+
+        <!-- Twitter -->
+        <a href="https://twitter.com/login"
+           target="_blank"
+           class="text-white hover:text-spotify-green transition duration-300">
+            <i class="fab fa-twitter text-5xl"></i>
+        </a>
+
+        <!-- LinkedIn -->
+        <a href="https://www.linkedin.com/login/"
+           target="_blank"
+           class="text-white hover:text-spotify-green transition duration-300">
+            <i class="fab fa-linkedin text-5xl"></i>
+        </a>
+    </div>
+</div>
+
+
+
+
+
+
 
                     <button onclick="showSlide(8);"
                             class="mt-8 text-gray-400 hover:text-white transition duration-300">
@@ -226,6 +250,14 @@
 </div>
 
 <style>
+    .social-share a {
+    display: inline-block;
+    line-height: 0;
+    }
+
+    .social-share a:hover {
+    transform: scale(1.1);
+}
     .slide {
         opacity: 0;
         pointer-events: none;
