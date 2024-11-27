@@ -232,7 +232,14 @@ def user_dashboard(request):
     top_genres = sorted(genre_count.items(), key=lambda x: x[1], reverse=True)[:5]
 
     # Calculate Total Time Listened
-    total_time_ms = sum(track["track"]["duration_ms"] for track in recent_tracks)
+    # Calculate Total Time Listened
+    total_time_ms = 0
+    for track in recent_tracks:
+        try:
+            total_time_ms += track.get("track", {}).get("duration_ms", 0)
+        except Exception as e:
+            print(f"Error processing track: {e}")
+
     total_time_sec = total_time_ms / 1000
     total_time_min = total_time_sec / 60
     hours = int(total_time_min // 60)
