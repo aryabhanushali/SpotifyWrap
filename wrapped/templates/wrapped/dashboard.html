@@ -207,27 +207,21 @@
             </form>
         </div>
 
+
+
 <div class="social-share mt-8">
-    <h3 class="text-xl text-white mb-4">Or share your Wrapped:</h3>
+    <h3 class="text-xl text-white mb-4">And share your Wrapped:</h3>
     <div class="flex justify-center space-x-8">
         <!-- Instagram -->
-        <a href="https://www.instagram.com/accounts/login/"
-           target="_blank"
-           class="text-white hover:text-spotify-green transition duration-300">
+        <a href="https://www.instagram.com/accounts/login/" target="_blank" onclick="downloadAndRedirect(this.href); return false;" class="text-white hover:text-spotify-green transition duration-300">
             <i class="fab fa-instagram text-5xl"></i>
         </a>
-
         <!-- Twitter -->
-        <a href="https://twitter.com/login"
-           target="_blank"
-           class="text-white hover:text-spotify-green transition duration-300">
+        <a href="https://twitter.com/login" target="_blank" onclick="downloadAndRedirect(this.href); return false;" class="text-white hover:text-spotify-green transition duration-300">
             <i class="fab fa-twitter text-5xl"></i>
         </a>
-
         <!-- LinkedIn -->
-        <a href="https://www.linkedin.com/login/"
-           target="_blank"
-           class="text-white hover:text-spotify-green transition duration-300">
+        <a href="https://www.linkedin.com/login/" target="_blank" onclick="downloadAndRedirect(this.href); return false;" class="text-white hover:text-spotify-green transition duration-300">
             <i class="fab fa-linkedin text-5xl"></i>
         </a>
     </div>
@@ -291,5 +285,30 @@ function showSlide(slideNumber) {
 document.addEventListener('DOMContentLoaded', () => {
     showSlide(1);
 });
+
+
+
+
+</script>
+
+<script>
+function downloadAndRedirect(url) {
+    fetch('{% url "download_wrapped_image" %}')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'spotify_wrapped.png';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Download failed:', error))
+        .finally(() => {
+            window.location.href = url;
+        });
+}
 </script>
 {% endblock %}

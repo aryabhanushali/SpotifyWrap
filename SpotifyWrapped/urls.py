@@ -28,4 +28,5 @@ urlpatterns = [
     path("spotify/logout/", views.spotify_logout, name="spotify_logout"),
     path('wrapped/<str:wrapped_id>/', views.shareable_page, name='shareable_page'),
     path("old_wrappeds/", views.view_old_wrappeds, name="view_old_wrappeds"),
+    path('download-wrapped-image/', views.download_wrapped_image, name='download_wrapped_image'),
 ]

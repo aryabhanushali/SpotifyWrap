@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="cff60169-3825-49b3-a81f-a2a6136751ee" name="Changes" comment="minor changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SpotifyWrapped/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpotifyWrapped/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +56,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
-    "git-widget-placeholder": "mihika2",
+    "git-widget-placeholder": "arsh",
     "last_opened_file_path": "/Users/arsheyagourav/Downloads/cs2340/SpotifyWrap",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

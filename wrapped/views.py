@@ -36,6 +36,62 @@ def user_dashboard(request):
 import random
 import string
 from .models import SpotifyWrappedData, Profile
+from django.http import FileResponse
+from PIL import Image, ImageDraw, ImageFont
+import io
+
+
+def download_wrapped_image(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+    access_token = request.session.get("access_token")
+    if not access_token:
+        refresh_token(request)
+        access_token = request.session.get("access_token")
+    if access_token is None:
+        return JsonResponse({'error': 'No access token'}, status=400)
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Fetch top tracks
+    top_tracks = requests.get(
+        "https://api.spotify.com/v1/me/top/tracks?limit=5",
+        headers=headers
+    ).json().get("items", [])
+
+    # Fetch top artists
+    top_artists = requests.get(
+        "https://api.spotify.com/v1/me/top/artists?limit=5",
+        headers=headers
+    ).json().get("items", [])
+
+    img = Image.new('RGB', (400, 800), color='black')
+    d = ImageDraw.Draw(img)
+    font = ImageFont.load_default()
+
+    d.text((20, 20), "Your Spotify Wrapped", fill='white', font=font)
+
+    # Top Tracks
+    d.text((20, 60), "Top Tracks:", fill='white', font=font)
+    y_offset = 100
+    for i, track in enumerate(top_tracks, 1):
+        d.text((20, y_offset), f"{i}. {track['name']} - {track['artists'][0]['name']}", fill='white', font=font)
+        y_offset += 30
+
+    # Top Artists with listening time
+    d.text((20, y_offset + 20), "Top Artists:", fill='white', font=font)
+    y_offset += 60
+    for i, artist in enumerate(top_artists, 1):
+        # Simulate listening time (replace with actual data if available)
+        listening_time = random.randint(1, 100)
+        d.text((20, y_offset), f"{i}. {artist['name']} - {listening_time} hours", fill='white', font=font)
+        y_offset += 30
+
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return FileResponse(buf, as_attachment=True, filename='spotify_wrapped.png')
 
 
 # Create your views here.
@@ -136,6 +192,8 @@ def spotify_callback(request):
 
     # Redirect to the user dashboard
     return redirect('user_dashboard')
+
+
 
 def refresh_token(request):
     refresh_token = request.session.get("refresh_token")
