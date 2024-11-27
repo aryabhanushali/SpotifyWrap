@@ -47,17 +47,17 @@
             </div>
 
             <!-- Slide 3: Top Artists -->
-            <div class="slide hidden absolute inset-0 p-8" id="slide-3">
+             <div class="slide hidden" id="slide-3">
                 <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.2.title }}</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {% for artist in slides.2.items %}
-                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                    <div class="flex flex-col items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
                         {% if artist.images.0.url %}
                         <img src="{{ artist.images.0.url }}"
                              alt="{{ artist.name }}"
-                             class="w-20 h-20 rounded-md shadow-lg">
+                             class="w-20 h-20 rounded-md shadow-lg object-cover">
                         {% endif %}
-                        <div class="ml-4">
+                        <div class="mt-4 text-center">
                             <h3 class="text-white font-semibold">{{ artist.name }}</h3>
                             <p class="text-gray-400">Top Tracks:</p>
                             <ul class="text-gray-400 text-sm">
@@ -75,31 +75,30 @@
                     <button onclick="showSlide(4);" class="slide-nav-btn">Next</button>
                 </div>
             </div>
-
             <!-- Slide 4: Recently Played -->
-            <div class="slide hidden absolute inset-0 p-8" id="slide-4">
-                <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.3.title }}</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {% for track in slides.3.items %}
-                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
-                        {% if track.track.album.images.0.url %}
-                        <img src="{{ track.track.album.images.0.url }}"
-                             alt="{{ track.track.name }}"
-                             class="w-20 h-20 rounded-md shadow-lg">
-                        {% endif %}
-                        <div class="ml-4">
-                            <h3 class="text-white font-semibold">{{ track.track.name }}</h3>
-                            <p class="text-gray-400">{{ track.track.artists.0.name }}</p>
-                            <p class="text-gray-400 text-sm">{{ track.played_at|date:"Y-m-d H:i" }}</p>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                <div class="flex justify-between mt-8">
-                    <button onclick="showSlide(3);" class="slide-nav-btn">Previous</button>
-                    <button onclick="showSlide(5);" class="slide-nav-btn">Next</button>
-                </div>
+            <div class="slide hidden p-8 flex flex-col min-h-screen" id="slide-4">
+    <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.3.title }}</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow">
+        {% for track in slides.3.items %}
+        <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+            {% if track.track.album.images.0.url %}
+            <img src="{{ track.track.album.images.0.url }}"
+                 alt="{{ track.track.name }}"
+                 class="w-20 h-20 rounded-md shadow-lg object-cover">
+            {% endif %}
+            <div class="ml-4">
+                <h3 class="text-white font-semibold">{{ track.track.name }}</h3>
+                <p class="text-gray-400">{{ track.track.artists.0.name }}</p>
+                <p class="text-gray-400 text-sm">{{ track.played_at|date:"Y-m-d H:i" }}</p>
             </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="flex justify-between mt-8">
+        <button onclick="showSlide(3);" class="slide-nav-btn">Previous</button>
+        <button onclick="showSlide(5);" class="slide-nav-btn">Next</button>
+    </div>
+</div>
 
             <!-- Slide 5: Top Genres -->
             <div class="slide hidden absolute inset-0 p-8" id="slide-5">
@@ -226,11 +225,6 @@
         </a>
     </div>
 </div>
-
-
-
-
-
 
 
                     <button onclick="showSlide(8);"
