@@ -33,8 +33,8 @@
         {% for artist in slides.2.items %}
         <div class="artist-card card" onclick="showArtistModal('{{ forloop.counter }}')">
             {% if artist.images.0.url %}
-            <img src="{{ artist.images.0.url }}" 
-                 alt="{{ artist.name }}" 
+            <img src="{{ artist.images.0.url }}"
+                 alt="{{ artist.name }}"
                  class="w-full h-48 object-cover rounded-t-lg">
             {% endif %}
             <div class="p-4">
@@ -48,13 +48,13 @@
 
 <!-- Artist Modal -->
 {% for artist in slides.2.items %}
-<div id="artist-modal-{{ forloop.counter }}" 
+<div id="artist-modal-{{ forloop.counter }}"
      class="modal fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center">
     <div class="bg-spotify-dark-card max-w-2xl w-full mx-4 rounded-xl shadow-2xl">
         <!-- Modal Header -->
         <div class="relative">
-            <img src="{{ artist.images.0.url }}" 
-                 alt="{{ artist.name }}" 
+            <img src="{{ artist.images.0.url }}"
+                 alt="{{ artist.name }}"
                  class="w-full h-48 object-cover rounded-t-xl">
             <div class="absolute inset-0 bg-gradient-to-t from-spotify-dark-card"></div>
             <button onclick="hideArtistModal('{{ forloop.counter }}')"
@@ -77,8 +77,8 @@
                 <h4 class="text-lg font-semibold text-spotify-green">Your Most Played Tracks</h4>
                 {% for track in artist.user_top_tracks %}
                 <div class="flex items-center p-3 bg-spotify-black rounded-lg">
-                    <img src="{{ track.album.images.0.url }}" 
-                         alt="{{ track.name }}" 
+                    <img src="{{ track.album.images.0.url }}"
+                         alt="{{ track.name }}"
                          class="w-12 h-12 rounded">
                     <div class="ml-4">
                         <p class="text-white font-medium">{{ track.name }}</p>

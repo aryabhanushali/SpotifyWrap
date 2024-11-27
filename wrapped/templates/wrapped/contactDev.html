@@ -6,46 +6,110 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
             spotifyGreen: '#1DB954',
+            'spotify-light': {
+              'bg': '#ffffff',
+              'card': '#f7f7f7',
+              'text': '#121212',
+              'secondary': '#6b7280',
+            },
+            'spotify-dark': {
+              'bg': '#191414',
+              'card': '#282828',
+              'text': '#ffffff',
+              'secondary': '#a0a0a0',
+            }
           }
         }
       }
     }
   </script>
+  <!-- Theme Check Script -->
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
 </head>
-<body class="min-h-screen flex flex-col bg-black text-black">
+
+<body class="min-h-screen flex flex-col bg-spotify-light-bg dark:bg-spotify-dark-bg text-spotify-light-text dark:text-spotify-dark-text transition-colors duration-200">
   <!-- Navigation Bar -->
   <nav class="flex justify-between items-center p-6 bg-spotifyGreen">
-    <h1 class="text-3xl font-bold" style="font-family: 'Helvetica', sans-serif;">
+    <h1 class="text-3xl font-bold text-white" style="font-family: 'Helvetica', sans-serif;">
       SpotifyWrapped
     </h1>
-    <div class="space-x-8">
-      <a href="#" class="text-lg font-medium hover:underline">My Account</a>
-      <a href="#" class="text-lg font-medium hover:underline">My Wrapped</a>
-      <a href="#" class="text-lg font-medium hover:underline">Contact Developers</a>
-      <a href="#" class="text-lg font-medium hover:underline">Log Out</a>
+    <div class="flex items-center space-x-8">
+      <a href="#" class="text-lg font-medium hover:underline text-white">My Account</a>
+      <a href="#" class="text-lg font-medium hover:underline text-white">My Wrapped</a>
+      <a href="#" class="text-lg font-medium hover:underline text-white">Contact Developers</a>
+
+      <!-- Theme Toggle Button -->
+      <button id="theme-toggle" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+        <!-- Sun Icon -->
+        <svg id="theme-toggle-light-icon" class="hidden w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+        </svg>
+        <!-- Moon Icon -->
+        <svg id="theme-toggle-dark-icon" class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+        </svg>
+      </button>
+
+      <a href="#" class="text-lg font-medium hover:underline text-white">Log Out</a>
     </div>
   </nav>
 
   <!-- About Us Section -->
   <section class="flex justify-center items-center px-4 py-8">
     <div class="w-full max-w-md sm:max-w-sm md:max-w-lg">
-      <h2 class="text-center text-2xl font-bold text-white">About Us</h2>
+      <h2 class="text-center text-2xl font-bold text-spotify-light-text dark:text-spotify-dark-text">About Us</h2>
     </div>
   </section>
 
   <!-- Main Container -->
   <div class="flex-grow flex flex-col justify-center items-center px-4 py-8">
-    <!-- Additional Content Here -->
+    <div class="bg-spotify-light-card dark:bg-spotify-dark-card p-6 rounded-lg shadow-lg transition-colors">
+      <!-- Additional Content Here -->
+    </div>
   </div>
 
   <!-- Footer -->
-  <footer class="bg-black p-4 text-center text-gray-600">
+  <footer class="bg-spotify-light-bg dark:bg-spotify-dark-bg p-4 text-center text-spotify-light-secondary dark:text-spotify-dark-secondary transition-colors">
     <p>&copy; 2024 Spotify Wrapped. All rights reserved.</p>
   </footer>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    // Set initial icon state
+    if (document.documentElement.classList.contains('dark')) {
+      lightIcon.classList.remove('hidden');
+      darkIcon.classList.add('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+      // Toggle icons
+      darkIcon.classList.toggle('hidden');
+      lightIcon.classList.toggle('hidden');
+
+      // Toggle theme
+      if (localStorage.theme === 'dark') {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+      }
+    });
+  </script>
 </body>
 </html>
-s

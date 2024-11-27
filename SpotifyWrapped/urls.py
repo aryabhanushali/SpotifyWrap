@@ -26,7 +26,10 @@ urlpatterns = [
     path("spotify/callback/", views.spotify_callback, name="spotify_callback"),
     path("dashboard/", views.user_dashboard, name="user_dashboard"),
     path("spotify/logout/", views.spotify_logout, name="spotify_logout"),
+    path('toggle-theme/', views.toggle_theme, name='toggle_theme'),
 
     path("wrapped/<str:wrapped_id>/", views.shareable_page, name="shareable_page"),
 
 ]
+handler404 = 'wrapped.views.error_404'
+handler500 = 'wrapped.views.error_500'

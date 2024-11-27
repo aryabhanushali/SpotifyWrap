@@ -2,9 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Profile(models.Model):
+    THEME_CHOICES = [
+        ('light', 'Light'),
+        ('dark', 'Dark'),
+        ('system', 'System')  # Follows system preference
+    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     spotify_user_id = models.CharField(max_length=255, blank=True, null=True)
     spotify_access_token = models.CharField(max_length=255, blank=True, null=True)
+    theme_preference = models.CharField(
+        max_length=6,
+        choices=THEME_CHOICES,
+        default='system'
+    )
 
 class SpotifyWrappedData(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE)

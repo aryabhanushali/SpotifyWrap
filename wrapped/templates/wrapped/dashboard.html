@@ -1,45 +1,73 @@
 {% extends "wrapped/base.html" %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-spotify-black to-spotify-dark">
+<div class="min-h-screen bg-gradient-to-br from-spotify-light-bg to-spotify-light-card dark:from-spotify-black dark:to-spotify-dark">
     <div class="container mx-auto px-4 py-8">
+        <!-- Dark/Light Mode Toggle -->
+        <div class="fixed top-4 right-4 flex items-center">
+            <span class="mr-2 text-spotify-light-text dark:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/>
+                </svg>
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 rounded-full peer 
+                            dark:bg-gray-700 peer-checked:after:translate-x-full 
+                            peer-checked:bg-spotify-green after:content-[''] 
+                            after:absolute after:top-[2px] after:left-[2px] 
+                            after:bg-white after:rounded-full after:h-5 
+                            after:w-5 after:transition-all">
+                </div>
+            </label>
+            <span class="ml-2 text-spotify-light-text dark:text-white">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                </svg>
+            </span>
+        </div>
+
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-4xl font-bold text-white">Your Spotify Wrapped</h1>
-            <a href="{% url 'spotify_logout' %}" 
+            <h1 class="text-4xl font-bold text-spotify-light-text dark:text-white">Your Spotify Wrapped</h1>
+            <a href="{% url 'spotify_logout' %}"
                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition duration-300">
                 Log Out
             </a>
         </div>
 
         <!-- Slides Container -->
-        <div class="relative min-h-[600px] bg-spotify-card rounded-xl shadow-2xl p-8">
-            <!-- Slide 1: Welcome -->
-            <div class="slide absolute inset-0 p-8 transition-opacity duration-500" id="slide-1">
-                <div class="h-full flex flex-col justify-center items-center text-center">
-                    <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.0.title }}</h2>
-                    <p class="text-2xl text-white mb-8">{{ slides.0.content }}</p>
-                    <button onclick="showSlide(2);" 
-                            class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full text-xl transition duration-300">
-                        Let's Go!
-                    </button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for track in slides.1.items %}
+            <div class="flex items-center bg-opacity-90 bg-zinc-800 dark:bg-zinc-800 rounded-lg p-4 hover:bg-zinc-700 dark:hover:bg-zinc-700 transition duration-300 cursor-pointer shadow-md">
+                {% if track.album.images.0.url %}
+                <img src="{{ track.album.images.0.url }}"
+                     alt="{{ track.name }}"
+                     class="w-20 h-20 rounded-md shadow-lg">
+                {% endif %}
+                <div class="ml-4">
+                    <h3 class="text-white font-semibold">{{ track.name }}</h3>
+                    <p class="text-gray-400">{{ track.artists.0.name }}</p>
                 </div>
             </div>
+            {% endfor %}
+        </div>
 
             <!-- Slide 2: Top Tracks -->
             <div class="slide hidden absolute inset-0 p-8" id="slide-2">
                 <h2 class="text-4xl font-bold text-spotify-green mb-6">{{ slides.1.title }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {% for track in slides.1.items %}
-                    <div class="flex items-center bg-spotify-dark-card rounded-lg p-4 hover:bg-spotify-hover transition duration-300">
+                    <div class="flex items-center bg-spotify-light-bg dark:bg-spotify-dark-card rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-spotify-hover transition duration-300">
                         {% if track.album.images.0.url %}
-                        <img src="{{ track.album.images.0.url }}" 
-                             alt="{{ track.name }}" 
+                        <img src="{{ track.album.images.0.url }}"
+                             alt="{{ track.name }}"
                              class="w-20 h-20 rounded-md shadow-lg">
                         {% endif %}
                         <div class="ml-4">
-                            <h3 class="text-white font-semibold">{{ track.name }}</h3>
-                            <p class="text-gray-400">{{ track.artists.0.name }}</p>
+                            <h3 class="text-spotify-light-text dark:text-white font-semibold">{{ track.name }}</h3>
+                            <p class="text-spotify-light-secondary dark:text-gray-400">{{ track.artists.0.name }}</p>
                         </div>
                     </div>
                     {% endfor %}
@@ -50,25 +78,23 @@
                 </div>
             </div>
 
-            <!-- Similar structure for other slides... -->
-            
             <!-- Final Slide -->
             <div class="slide hidden absolute inset-0 p-8" id="slide-9">
                 <div class="h-full flex flex-col justify-center items-center text-center">
                     <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.8.title }}</h2>
-                    <p class="text-2xl text-white mb-8">{{ slides.8.content }}</p>
-                    
+                    <p class="text-2xl text-spotify-light-text dark:text-white mb-8">{{ slides.8.content }}</p>
+
                     <div class="social-share mt-8">
-                        <h3 class="text-xl text-white mb-4">Share Your Wrapped:</h3>
-                        <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}" 
-                           target="_blank" 
+                        <h3 class="text-xl text-spotify-light-text dark:text-white mb-4">Share Your Wrapped:</h3>
+                        <a href="{% url 'shareable_page' wrapped_id=wrapped_id %}"
+                           target="_blank"
                            class="bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
                             View and Share Link
                         </a>
                     </div>
-                    
-                    <button onclick="showSlide(8);" 
-                            class="mt-8 text-gray-400 hover:text-white transition duration-300">
+
+                    <button onclick="showSlide(8);"
+                            class="mt-8 text-spotify-light-secondary dark:text-gray-400 hover:text-spotify-light-text dark:hover:text-white transition duration-300">
                         ← Back
                     </button>
                 </div>
@@ -106,6 +132,22 @@ function showSlide(slideNumber) {
         }, 500);
     });
 }
+
+// Theme toggle functionality
+const themeToggle = document.getElementById('theme-toggle');
+
+// Set initial state
+themeToggle.checked = document.documentElement.classList.contains('dark');
+
+themeToggle.addEventListener('change', function() {
+    if (this.checked) {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+    } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+    }
+});
 
 // Show first slide on load
 document.addEventListener('DOMContentLoaded', () => {

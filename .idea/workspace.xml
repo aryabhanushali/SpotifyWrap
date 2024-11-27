@@ -4,7 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cff60169-3825-49b3-a81f-a2a6136751ee" name="Changes" comment="minor changes" />
+    <list default="true" id="cff60169-3825-49b3-a81f-a2a6136751ee" name="Changes" comment="minor changes">
+      <change beforePath="$PROJECT_DIR$/.idea/SpotifyWrap.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SpotifyWrap.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_31_24,_2_15 PM_[Changes]/db.sqlite3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_31_24,_2_15 PM_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_31_24__2_15PM__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SpotifyWrapped/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpotifyWrapped/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SpotifyWrapped/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpotifyWrapped/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spotifyWrapped-1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/Artist Modal Template.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/Artist Modal Template.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/contactDev.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/contactDev.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/registration/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrapped/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,7 +40,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="arsh" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -33,7 +54,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/aryabhanushali/SpotifyWrap.git&quot;,
-    &quot;accountId&quot;: &quot;c6f78285-720f-42c0-bbaa-a9534724a5ab&quot;
+    &quot;accountId&quot;: &quot;afe4588d-aa92-444c-ad5c-9f915c5bb2d0&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -44,37 +65,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/arsheyagourav/Downloads/cs2340/SpotifyWrap",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.intellij.python.django.customization.DjangoModulesConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Django Server.lastone.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ritish&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/ritishpokhrel/PycharmProjects/SpotifyWrap 2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.python.django.customization.DjangoModulesConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
-    <configuration name="SpotifyWrap" type="Python.DjangoServer" factoryName="Django server">
+    <configuration default="true" type="Python.DjangoServer" factoryName="Django server">
       <module name="SpotifyWrap" />
-      <option name="ENV_FILES" value="" />
+      <option name="ENV_FILES" value="$PROJECT_DIR$/.env" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </EXTENSION>
       <option name="launchJavascriptDebuger" value="false" />
       <option name="port" value="8000" />
       <option name="host" value="localhost" />
@@ -87,14 +119,6 @@
       <method v="2" />
     </configuration>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-PY-242.20224.428" />
-        <option value="bundled-python-sdk-80e8e15d2b92-39cff9de6eef-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.20224.428" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -106,6 +130,12 @@
       <workItem from="1730320657512" duration="1299000" />
       <workItem from="1730322248444" duration="9002000" />
       <workItem from="1730398556980" duration="208000" />
+      <workItem from="1732001939097" duration="10000" />
+      <workItem from="1732002013197" duration="1781000" />
+      <workItem from="1732039586390" duration="3139000" />
+      <workItem from="1732044802183" duration="373000" />
+      <workItem from="1732737259830" duration="770000" />
+      <workItem from="1732741940071" duration="231000" />
     </task>
     <task id="LOCAL-00001" summary="secret">
       <option name="closed" value="true" />
