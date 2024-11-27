@@ -49,7 +49,7 @@ def spotify_login(request):
         "response_type": "code",
         "redirect_uri": settings.SPOTIFY_REDIRECT_URI,
         "show_dialog": "true",
-        "scope": "user-top-read",
+        "scope": "user-top-read user-read-recently-played",
     }
     url = f"{auth_url}?{urlencode(params)}"
     return redirect(url)
