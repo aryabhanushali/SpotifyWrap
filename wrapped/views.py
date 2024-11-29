@@ -362,7 +362,7 @@ def user_dashboard(request):
             "items": artist_followers
         },
         {
-            "title": "Total Time Listened",
+            "title": "Total Time Listened to Recent Tracks ",
             "items": [],
             "content": total_time_listened
         },
