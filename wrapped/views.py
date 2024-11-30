@@ -423,3 +423,13 @@ def view_old_wrappeds(request):
     return render(request, "wrapped/old_wrappeds.html", context)
 class SaveWrapsForm(forms.Form):
     custom_name = forms.CharField(max_length=255, label="Name your wrap!")
+
+def contact_devs(request):
+    developers = [
+        {"name": "Arsheya Gourav", "email": "arsheya.gourav29@gmail.con"},
+        {"name": "Sruthi Medepalli", "email": "sruthi.medepalli@gmail.com"},
+        {"name": "Arya Bhanushali", "email": "aryabhanush@gmail.com"},
+        {"name": "Mihika Gottimukala", "email": "mihikacg@gmail.com"},
+        {"name": "Ritish Pokhrel", "email": "ritish.pokhrel24@gmail.com"},
+    ]
+    return render(request, "wrapped/contact_devs.html", {'developers': developers})

@@ -116,14 +116,21 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-spotify-dark mt-12">
-        <div class="container mx-auto px-4 py-6">
-            <div class="text-center text-gray-400 text-sm">
-                <p>Built with Django and Tailwind CSS</p>
-                <p class="mt-2">© {% now "Y" %} Spotify Wrapped. Not affiliated with Spotify AB.</p>
-            </div>
+<footer class="bg-spotify-dark mt-12">
+    <div class="container mx-auto px-4 py-6">
+        <div class="text-center text-gray-400 text-sm">
+            <p>Built with Django and Tailwind CSS</p>
+            <p class="mt-2">© {% now "Y" %} Spotify Wrapped. Not affiliated with Spotify AB.</p>
+            <p class="mt-4">
+                Got a question?
+                <a href="{% url 'contact_devs' %}"
+                   class="btn-spotify-outline text-sm inline-block">
+                    Contact our developers here.
+                </a>
+            </p>
         </div>
-    </footer>
+    </div>
+</footer>
 
     <!-- Loading Overlay -->
     <div id="loading-overlay"
