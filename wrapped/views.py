@@ -42,6 +42,22 @@ import io
 
 
 def download_wrapped_image(request):
+    """
+    Generate and download a Spotify Wrapped summary image for the authenticated user.
+
+    This view function creates a PNG image displaying the user's top tracks and artists
+    from Spotify. It requires the user to be authenticated and have a valid access token.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+
+    Returns:
+        FileResponse: A PNG image file containing the user's Spotify Wrapped summary
+        JsonResponse: An error response if authentication fails or no access token is available
+
+    Raises:
+        Exception: Potential exceptions during API calls or image generation
+    """
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
 
@@ -96,9 +112,30 @@ def download_wrapped_image(request):
 
 # Create your views here.
 def home(request):
+    """
+    Render the home page for the Spotify Wrapped application.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+
+    Returns:
+        HttpResponse: Rendered home page template
+    """
     return render(request, "wrapped/home.html")
 
 def spotify_login(request):
+    """
+    Initiate Spotify OAuth login process.
+
+    Generates an authorization URL with necessary parameters to request
+    user authorization for reading top tracks and recently played music.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+
+    Returns:
+        HttpResponseRedirect: Redirects user to Spotify authorization page
+    """
     auth_url = "https://accounts.spotify.com/authorize"
     params = {
         "client_id": settings.SPOTIFY_CLIENT_ID,
@@ -112,12 +149,39 @@ def spotify_login(request):
 
 
 def spotify_logout(request):
+    """
+    Log out the user by clearing the session data.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+
+    Returns:
+        HttpResponseRedirect: Redirects user to the home page
+    """
     request.session.flush()  # Clears all session data
     print("Session after logout:", request.session.get("access_token"))
     return redirect("home")
 
 
 def spotify_callback(request):
+    """
+    Handle the OAuth callback from Spotify after user authorization.
+
+    This function:
+    - Exchanges the authorization code for an access token
+    - Creates or retrieves a user account
+    - Logs in the user
+    - Creates a Spotify Wrapped data record
+    - Redirects to the user dashboard
+
+    Args:
+        request (HttpRequest): The HTTP request object containing the authorization code
+
+    Returns:
+        HttpResponse or HttpResponseRedirect:
+        - Error response if token retrieval fails
+        - Redirect to user dashboard if successful
+    """
     code = request.GET.get('code')
     if not code:
         return HttpResponse('Error: No authorization code received', status=400)
@@ -196,6 +260,14 @@ def spotify_callback(request):
 
 
 def refresh_token(request):
+    """
+    Refresh the Spotify access token using the stored refresh token.
+
+    Updates the session with a new access token when the current one expires.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing the refresh token in the session
+    """
     refresh_token = request.session.get("refresh_token")
     token_url = "https://accounts.spotify.com/api/token"
     data = {
@@ -210,6 +282,18 @@ def refresh_token(request):
 
 
 def user_dashboard(request):
+    """
+    Render the user dashboard with Spotify listening statistics.
+
+    Fetches and processes user's top tracks, artists, genres, and listening time.
+    Supports saving the Wrapped summary and generating a shareable page.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+
+    Returns:
+        HttpResponse: Rendered dashboard or home page template with user's Spotify data
+    """
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -400,6 +484,18 @@ def user_dashboard(request):
         return render(request, "wrapped/home.html", context)
 
 def shareable_page(request, wrapped_id):
+    """
+    Render a shareable page for a specific Spotify Wrapped summary.
+
+    Retrieves the Wrapped data for the given unique identifier and displays it.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+        wrapped_id (str): Unique identifier for a specific Wrapped summary
+
+    Returns:
+        HttpResponse: Rendered shareable page with Wrapped summary or home page if invalid
+    """
     try:
         wrapped_data = SpotifyWrappedData.objects.get(wrapped_id=wrapped_id)
     except SpotifyWrappedData.DoesNotExist:
@@ -414,6 +510,15 @@ def shareable_page(request, wrapped_id):
     return render(request, "wrapped/shareable.html", context)
 
 def view_old_wrappeds(request):
+    """
+    Display a list of past Spotify Wrapped summaries for the current user.
+
+    Args:
+        request (HttpRequest): The HTTP request object
+
+    Returns:
+        HttpResponse: Rendered template showing previous Wrapped summaries
+    """
     profile = Profile.objects.get(user=request.user)
     past_wrapped_summaries = SpotifyWrappedData.objects.filter(user=profile).order_by('-created_at')
 
@@ -422,4 +527,9 @@ def view_old_wrappeds(request):
     }
     return render(request, "wrapped/old_wrappeds.html", context)
 class SaveWrapsForm(forms.Form):
+    """
+    Form for saving a custom name for the Spotify Wrapped summary.
+
+    Provides a text input field for users to name their Wrapped summary.
+    """
     custom_name = forms.CharField(max_length=255, label="Name your wrap!")

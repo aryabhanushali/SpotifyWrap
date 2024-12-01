@@ -308,38 +308,81 @@
 </style>
 
 <script>
-    function showSlide(slideNumber) {
-        const slides = document.querySelectorAll(".slide");
-        slides.forEach(slide => slide.classList.remove("active"));
+/**
+ * Activates the specified slide by its number.
+ * Removes the "active" class from all slides and applies it to the targeted slide.
+ *
+ * @param {number} slideNumber - The number of the slide to activate.
+ */
+function showSlide(slideNumber) {
+    /**
+     * All slide elements on the page.
+     * @type {NodeListOf<Element>}
+     */
+    const slides = document.querySelectorAll(".slide");
 
-        const nextSlide = document.getElementById(`slide-${slideNumber}`);
-        nextSlide.classList.add("active");
-    }
+    // Remove the "active" class from all slides
+    slides.forEach(slide => slide.classList.remove("active"));
 
-    document.addEventListener("DOMContentLoaded", () => {
-        showSlide(1);
-    });
+    /**
+     * The next slide element to be activated.
+     * @type {Element}
+     */
+    const nextSlide = document.getElementById(`slide-${slideNumber}`);
+
+    // Add the "active" class to the specified slide
+    nextSlide.classList.add("active");
+}
+
+/**
+ * Initializes the slideshow by displaying the first slide when the DOM content is loaded.
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    showSlide(1);
+});
+
 </script>
 
 <script>
+/**
+ * Downloads an image and redirects the user to a specified URL.
+ * Fetches the image file, triggers a download, and then navigates to the provided URL.
+ *
+ * @param {string} url - The URL to redirect to after the download is complete.
+ */
 function downloadAndRedirect(url) {
+    /**
+     * Fetch the wrapped image file from the server.
+     */
     fetch('{% url "download_wrapped_image" %}')
         .then(response => response.blob())
         .then(blob => {
-            const url = window.URL.createObjectURL(blob);
+            /**
+             * Creates a temporary URL for the downloaded file.
+             * @type {string}
+             */
+            const tempUrl = window.URL.createObjectURL(blob);
+
+            // Create a temporary <a> element to trigger the download
             const a = document.createElement('a');
             a.style.display = 'none';
-            a.href = url;
-            a.download = 'spotify_wrapped.png';
+            a.href = tempUrl;
+            a.download = 'spotify_wrapped.png'; // Filename for the downloaded file
             document.body.appendChild(a);
+
+            // Trigger the download
             a.click();
-            window.URL.revokeObjectURL(url);
+
+            // Revoke the temporary URL to free resources
+            window.URL.revokeObjectURL(tempUrl);
         })
-        .catch(error => console.error('Download failed:', error))
+        .catch(error => console.error('Download failed:', error)) // Log any errors
         .finally(() => {
+            // Redirect to the specified URL
             window.location.href = url;
         });
 }
+
 </script>
 
 
