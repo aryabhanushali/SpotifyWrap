@@ -10,8 +10,10 @@
             Switch to Light Mode
         </button>
         <button id="language-toggle" class="ml-4 bg-spotify-green text-white px-4 py-2 rounded-full transition duration-300">
-            Switch to Spanish
+            Cambiar a Español
         </button>
+
+
 
 
         </div>
@@ -477,23 +479,112 @@ function downloadAndRedirect(url) {
 </script>
 
 <script>
+    function showSlide(slideNumber) {
+        const slides = document.querySelectorAll(".slide");
+        slides.forEach(slide => slide.classList.remove("active"));
+
+        const nextSlide = document.getElementById(slide-${slideNumber});
+        nextSlide.classList.add("active");
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
-        const languageToggle = document.getElementById("language-toggle");
-        if (localStorage.getItem("language") === "es") {
-            setLanguage("es");
+        showSlide(1);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeToggle = document.getElementById("theme-toggle");
+        const body = document.body;
+        const header = document.querySelector("h1"); // Tar
+
+        if (localStorage.getItem("theme") === "light") {
+            body.classList.add("light-mode");
+            themeToggle.textContent = "Switch to Dark Mode";
+            header.classList.add("text-light-mode-green");
         }
 
-        languageToggle.addEventListener("click", () => {
-            const currentLanguage = localStorage.getItem("language");
-            if (currentLanguage === "es") {
-                setLanguage("en");
-                localStorage.setItem("language", "en");
-                languageToggle.textContent = "Switch to Spanish";
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-mode");
+
+            if (body.classList.contains("light-mode")) {
+                themeToggle.textContent = "Switch to Dark Mode";
+                localStorage.setItem("theme", "light");
+                header.classList.add("text-light-mode-green");
             } else {
-                setLanguage("es");
-                localStorage.setItem("language", "es");
-                languageToggle.textContent = "Switch to English";
+                themeToggle.textContent = "Switch to Light Mode";
+                localStorage.setItem("theme", "dark");
+                header.classList.remove("text-light-mode-green");
             }
+        });
+    });
+</script>
+<script>
+/**
+ * Downloads an image and redirects the user to a specified URL.
+ * Fetches the image file, triggers a download, and then navigates to the provided URL.
+ *
+ * @param {string} url - The URL to redirect to after the download is complete.
+ */
+function downloadAndRedirect(url) {
+    /**
+     * Fetch the wrapped image file from the server.
+     */
+    fetch('{% url "download_wrapped_image" %}')
+        .then(response => response.blob())
+        .then(blob => {
+            /**
+             * Creates a temporary URL for the downloaded file.
+             * @type {string}
+             */
+            const tempUrl = window.URL.createObjectURL(blob);
+
+            // Create a temporary <a> element to trigger the download
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = tempUrl;
+            a.download = 'spotify_wrapped.png'; // Filename for the downloaded file
+            document.body.appendChild(a);
+
+            // Trigger the download
+            a.click();
+
+            // Revoke the temporary URL to free resources
+            window.URL.revokeObjectURL(tempUrl);
+        })
+        .catch(error => console.error('Download failed:', error)) // Log any errors
+        .finally(() => {
+            // Redirect to the specified URL
+            window.location.href = url;
+        });
+}
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const languageToggle = document.getElementById("language-toggle");
+        const currentLanguage = localStorage.getItem("language") || "en"; // Default to English
+
+        // Set initial language
+        setLanguage(currentLanguage);
+
+        // Update button text based on initial language
+        updateToggleButtonText(currentLanguage);
+
+        languageToggle.addEventListener("click", () => {
+            const currentLanguage = localStorage.getItem("language") || "en";
+            let newLanguage;
+
+            if (currentLanguage === "en") {
+                newLanguage = "es";
+            } else if (currentLanguage === "es") {
+                newLanguage = "fr";
+            } else {
+                newLanguage = "en";
+            }
+
+            setLanguage(newLanguage);
+            localStorage.setItem("language", newLanguage);
+            updateToggleButtonText(newLanguage);
         });
     });
 
@@ -502,11 +593,10 @@ function downloadAndRedirect(url) {
             en: {
                 title: "Your Spotify Wrapped",
                 welcome: "Let's Go!",
-                switchToSpanish: "Switch to Spanish",
+                switchTo: "Cambiar a Espanol",
                 previous: "Previous",
                 next: "Next",
                 slides: [
-
                     "Top Tracks",                      // Slide 2
                     "Top Artists",                     // Slide 3
                     "Recently Played",                 // Slide 4
@@ -520,11 +610,10 @@ function downloadAndRedirect(url) {
             es: {
                 title: "Tu Spotify Wrapped",
                 welcome: "¡Vamos!",
-                switchToSpanish: "Cambiar a Inglés",
+                switchTo: "Cambiar a Francés",
                 previous: "Anterior",
                 next: "Siguiente",
                 slides: [
-
                     "Tus Mejores Canciones",           // Slide 2
                     "Tus Mejores Artistas",            // Slide 3
                     "Reproducciones Recientes",        // Slide 4
@@ -535,30 +624,58 @@ function downloadAndRedirect(url) {
                     "Gracias por Escuchar",            // Slide 9
                 ],
             },
+            fr: {
+                title: "Votre Spotify Wrapped",
+                welcome: "Allons-y!",
+                switchTo: "Switch to English",
+                previous: "Précédent",
+                next: "Suivant",
+                slides: [
+                    "Meilleures Chansons",             // Slide 2
+                    "Meilleurs Artistes",             // Slide 3
+                    "Écoutés Récemment",              // Slide 4
+                    "Genres Préférés",                // Slide 5
+                    "Popularité des Chansons",        // Slide 6
+                    "Abonnés des Artistes",           // Slide 7
+                    "Temps Total Écouté",             // Slide 8
+                    "Merci pour Votre Écoute",        // Slide 9
+                ],
+            },
         };
 
-        // Update page title and welcome message
-        document.querySelector("h1").textContent = translations[language].title;
-        document.querySelector(".welcome-title").textContent = translations[language].welcome;
+        const currentTranslations = translations[language];
 
-        // Update slide titles
+        // Update the title and welcome text
+        document.querySelector("h1").textContent = currentTranslations.title;
+        document.querySelector(".welcome-title").textContent = currentTranslations.welcome;
+
+        // Update the slide titles
         const slideTitles = document.querySelectorAll(".slide-title");
         slideTitles.forEach((title, index) => {
-            title.textContent = translations[language].slides[index];
+            title.textContent = currentTranslations.slides[index];
         });
 
-        // Update navigation buttons (Previous/Next)
+        // Update the navigation buttons
         const previousButtons = document.querySelectorAll(".slide-nav-btn:nth-child(1)");
         const nextButtons = document.querySelectorAll(".slide-nav-btn:nth-child(2)");
         previousButtons.forEach(button => {
-            button.textContent = translations[language].previous;
+            button.textContent = currentTranslations.previous;
         });
         nextButtons.forEach(button => {
-            button.textContent = translations[language].next;
+            button.textContent = currentTranslations.next;
         });
     }
-</script>
 
+    function updateToggleButtonText(language) {
+        const languageToggle = document.getElementById("language-toggle");
+        const toggleText = {
+            en: "Cambiar a Español",
+            es: "Cambiar a Francés",
+            fr: "Switch to English",
+        };
+        languageToggle.textContent = toggleText[language];
+    }
+</script>
 
 
 
