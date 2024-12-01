@@ -406,6 +406,15 @@
     </style>
 
 <script>
+
+    /**
+     * Displays the specified slide in a multi-step process.
+     *
+     * This function hides all existing slides and activates the slide
+     * corresponding to the given slide number by manipulating CSS classes.
+     *
+     * @param {number} slideNumber - The number of the slide to display.
+     */
     function showSlide(slideNumber) {
         const slides = document.querySelectorAll(".slide");
         slides.forEach(slide => slide.classList.remove("active"));
@@ -414,21 +423,38 @@
         nextSlide.classList.add("active");
     }
 
+    /**
+     * Initializes the slide display on page load.
+     *
+     * Sets the first slide to be active by default when the DOM content is fully loaded.
+     */
+
     document.addEventListener("DOMContentLoaded", () => {
         showSlide(1);
     });
+
+    /**
+     * Toggles the theme between light and dark modes.
+     *
+     * This function checks the current theme stored in localStorage
+     * and switches between "light-mode" and the default mode. It also updates
+     * the text of the theme toggle button to reflect the current mode.
+     */
 
     document.addEventListener("DOMContentLoaded", () => {
         const themeToggle = document.getElementById("theme-toggle");
         const body = document.body;
         const header = document.querySelector("h1"); // Tar
-
+        // Apply stored theme preference on page load
         if (localStorage.getItem("theme") === "light") {
             body.classList.add("light-mode");
             themeToggle.textContent = "Switch to Dark Mode";
             header.classList.add("text-light-mode-green");
         }
 
+        /**
+         * Event listener for toggling the theme.
+         */
         themeToggle.addEventListener("click", () => {
             body.classList.toggle("light-mode");
 
@@ -487,28 +513,55 @@ function downloadAndRedirect(url) {
 </script>
 
 <script>
+
+    /**
+     * Switches the currently displayed slide in a multi-step interface.
+     *
+     * This function hides all other slides and shows the specified slide
+     * by toggling the "active" class.
+     *
+     * @param {number} slideNumber - The number of the slide to display.
+     */
     function showSlide(slideNumber) {
         const slides = document.querySelectorAll(".slide");
         slides.forEach(slide => slide.classList.remove("active"));
 
-        const nextSlide = document.getElementById(slide-${slideNumber});
+        const nextSlide = document.getElementById(`slide-${slideNumber}`);
         nextSlide.classList.add("active");
     }
+
+    /**
+     * Initializes the slide display by showing the first slide on page load.
+     *
+     * This function is triggered when the DOM content is fully loaded and ensures
+     * that the first slide is displayed by default.
+     */
 
     document.addEventListener("DOMContentLoaded", () => {
         showSlide(1);
     });
 
+    /**
+     * Toggles the theme between light mode and dark mode.
+     *
+     * This function checks the current theme stored in localStorage and applies the
+     * corresponding theme to the webpage. It also updates the text of the theme toggle button.
+     */
+
     document.addEventListener("DOMContentLoaded", () => {
         const themeToggle = document.getElementById("theme-toggle");
         const body = document.body;
-        const header = document.querySelector("h1"); // Tar
+        const header = document.querySelector("h1");
 
         if (localStorage.getItem("theme") === "light") {
             body.classList.add("light-mode");
             themeToggle.textContent = "Switch to Dark Mode";
             header.classList.add("text-light-mode-green");
         }
+
+        /**
+         * Event listener for toggling the theme between light and dark modes.
+         */
 
         themeToggle.addEventListener("click", () => {
             body.classList.toggle("light-mode");
@@ -568,6 +621,14 @@ function downloadAndRedirect(url) {
 </script>
 
 <script>
+
+    /**
+     * Initializes the language toggle and sets the default language.
+     *
+     * This function updates the displayed text and button content based on the
+     * currently selected language stored in localStorage. It also adds a toggle event
+     * listener to switch between languages dynamically.
+     */
     document.addEventListener("DOMContentLoaded", () => {
         const languageToggle = document.getElementById("language-toggle");
         const currentLanguage = localStorage.getItem("language") || "en"; // Default to English
@@ -577,6 +638,10 @@ function downloadAndRedirect(url) {
 
         // Update button text based on initial language
         updateToggleButtonText(currentLanguage);
+
+        /**
+         * Event listener to toggle between supported languages.
+         */
 
         languageToggle.addEventListener("click", () => {
             const currentLanguage = localStorage.getItem("language") || "en";
@@ -595,6 +660,50 @@ function downloadAndRedirect(url) {
             updateToggleButtonText(newLanguage);
         });
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const themeToggle = document.getElementById("theme-toggle");
+    const body = document.body;
+    const header = document.querySelector("h1");
+
+    // Load stored theme preference
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme === "light") {
+        body.classList.add("light-mode");
+        themeToggle.textContent = "Switch to Dark Mode";
+        if (header) header.classList.add("text-light-mode-green");
+    }
+
+    console.log("Initial theme:", storedTheme);
+
+    // Theme toggle event listener
+    themeToggle.addEventListener("click", () => {
+        body.classList.toggle("light-mode");
+        const isLightMode = body.classList.contains("light-mode");
+
+        // Update button text and localStorage
+        themeToggle.textContent = isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode";
+        localStorage.setItem("theme", isLightMode ? "light" : "dark");
+
+        // Update header class for light mode
+        if (header) {
+            if (isLightMode) {
+                header.classList.add("text-light-mode-green");
+            } else {
+                header.classList.remove("text-light-mode-green");
+            }
+        }
+
+        console.log("Theme toggled. Current theme:", isLightMode ? "light" : "dark");
+    });
+});
+
+
+    /**
+     * Updates the displayed content based on the selected language.
+     *
+     * @param {string} language - The selected language code (e.g., "en", "es", "fr").
+     */
 
     function setLanguage(language) {
         const translations = {
@@ -695,9 +804,6 @@ function downloadAndRedirect(url) {
         // Update the custom name label text
         document.getElementById("customNameLabel").textContent = currentTranslations.customNameLabel;
 
-
-
-
         // Update the "Let's Go!" button
         document.getElementById("lets-go-button").textContent = currentTranslations.letsGoButton;
 
@@ -715,12 +821,6 @@ function downloadAndRedirect(url) {
 
         // Update the "And share your Wrapped:" text
         document.getElementById("shareWrappedText").textContent = currentTranslations.shareWrappedText;
-
-
-
-
-
-
 
 
 
@@ -742,7 +842,11 @@ function downloadAndRedirect(url) {
     }
 
 
-
+    /**
+     * Updates the toggle button text to reflect the next language option.
+     *
+     * @param {string} language - The current language code (e.g., "en", "es", "fr").
+     */
 
 
     function updateToggleButtonText(language) {

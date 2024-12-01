@@ -18,6 +18,21 @@ from django import forms
 from .models import SpotifyWrappedData
 
 def user_dashboard(request):
+
+    """
+    Render the user dashboard with Spotify Wrapped data.
+
+    This view fetches the user's Spotify Wrapped data, including their top tracks,
+    artists, genres, and total listening time, and prepares it for display on a
+    multi-slide UI.
+
+    Args:
+        request (HttpRequest): The HTTP request object, which may contain GET
+                               parameters for time range filters.
+
+    Returns:
+        HttpResponse: A response object rendering the user dashboard template.
+    """
     # Ensure the user is authenticated
     if not request.user.is_authenticated:
         return redirect('login')
@@ -42,6 +57,19 @@ import io
 
 
 def download_wrapped_image(request):
+    """
+    Generate and return a downloadable image with Spotify Wrapped data.
+
+    This function fetches the user's top tracks and artists from Spotify's API
+    and generates a personalized image using the PIL library.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        FileResponse: A downloadable image response in PNG format.
+        JsonResponse: Error response if the user is not authenticated or access token is missing.
+    """
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
 
@@ -96,9 +124,31 @@ def download_wrapped_image(request):
 
 # Create your views here.
 def home(request):
+    """
+    Render the home page of the application.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: A response object rendering the home template.
+    """
     return render(request, "wrapped/home.html")
 
 def spotify_login(request):
+    """
+    Redirect the user to the Spotify authorization page.
+
+    This function constructs the Spotify OAuth2 authorization URL with the required
+    parameters, including client ID, redirect URI, and scope. Once constructed, it
+    redirects the user to Spotify's authorization page to allow access.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponseRedirect: A redirect response to Spotify's authorization URL.
+    """
     auth_url = "https://accounts.spotify.com/authorize"
     params = {
         "client_id": settings.SPOTIFY_CLIENT_ID,
@@ -112,12 +162,40 @@ def spotify_login(request):
 
 
 def spotify_logout(request):
+    """
+    Log the user out of the application.
+
+    This function clears the user's session data, including the Spotify access token,
+    and redirects them to the home page. It ensures no residual data is left after logout.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponseRedirect: A redirect response to the home page.
+    """
     request.session.flush()  # Clears all session data
     print("Session after logout:", request.session.get("access_token"))
     return redirect("home")
 
 
 def spotify_callback(request):
+    """
+    Handle Spotify OAuth2 callback and user authentication.
+
+    This function processes the authorization code received from Spotify,
+    exchanges it for an access token and refresh token, and retrieves user
+    data from Spotify's API. It creates or updates a user profile in the database
+    and logs the user into the application.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing the Spotify
+                               authorization code.
+
+    Returns:
+        HttpResponseRedirect: Redirects the user to the dashboard on success.
+                              Returns an error response in case of failure.
+    """
     code = request.GET.get('code')
     if not code:
         return HttpResponse('Error: No authorization code received', status=400)
@@ -196,6 +274,19 @@ def spotify_callback(request):
 
 
 def refresh_token(request):
+    """
+    Refresh Spotify API access token using the refresh token.
+
+    This function retrieves the refresh token from the user's session and sends
+    a request to Spotify's token endpoint to obtain a new access token. The new
+    access token is stored back in the user's session for continued API access.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing the user's session.
+
+    Returns:
+        None: Updates the session with the new access token.
+    """
     refresh_token = request.session.get("refresh_token")
     token_url = "https://accounts.spotify.com/api/token"
     data = {
@@ -210,6 +301,25 @@ def refresh_token(request):
 
 
 def user_dashboard(request):
+    """
+    Render the user's Spotify Wrapped dashboard with personalized data.
+
+    This view retrieves and processes Spotify API data, including top tracks, artists,
+    genres, and listening history for the authenticated user. It organizes the data
+    into slides for a rich user experience.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing user session
+                               and optional query parameters for time range.
+
+    Returns:
+        HttpResponse: Renders the dashboard template with the user's Spotify data.
+        JsonResponse: Returns JSON data for slides if the request is made via AJAX.
+
+    Raises:
+        Http404: If the user's profile cannot be found.
+        Redirect: Redirects unauthenticated users to the login page.
+    """
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -407,6 +517,21 @@ def user_dashboard(request):
     return render(request, "wrapped/dashboard.html", context)
 
 def shareable_page(request, wrapped_id):
+    """
+    Render a shareable page displaying the user's Spotify Wrapped data.
+
+    This view retrieves Spotify Wrapped data based on the provided wrapped ID and
+    renders a shareable page. If the wrapped ID is invalid, the user is redirected
+    to the home page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        wrapped_id (str): A unique identifier for the Spotify Wrapped data.
+
+    Returns:
+        HttpResponse: A response object rendering the shareable Wrapped page or
+                      redirecting to the home page if the wrapped ID is invalid.
+    """
     try:
         wrapped_data = SpotifyWrappedData.objects.get(wrapped_id=wrapped_id)
     except SpotifyWrappedData.DoesNotExist:
@@ -421,6 +546,18 @@ def shareable_page(request, wrapped_id):
     return render(request, "wrapped/shareable.html", context)
 
 def view_old_wrappeds(request):
+    """
+    Render a list of past Spotify Wrapped summaries for the logged-in user.
+
+    This view fetches all past Spotify Wrapped summaries for the authenticated
+    user and organizes them in reverse chronological order for display.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: A response object rendering the page with past Wrapped summaries.
+    """
     profile = Profile.objects.get(user=request.user)
     past_wrapped_summaries = SpotifyWrappedData.objects.filter(user=profile).order_by('-created_at')
 
@@ -429,9 +566,30 @@ def view_old_wrappeds(request):
     }
     return render(request, "wrapped/old_wrappeds.html", context)
 class SaveWrapsForm(forms.Form):
+    """
+    Form for saving a custom name for a Spotify Wrapped summary.
+
+    Fields:
+        custom_name (CharField): A text field allowing the user to enter a custom name
+                                 for their Wrapped summary, with a maximum length of 255 characters.
+    """
     custom_name = forms.CharField(max_length=255, label="Name your wrap!")
 
 def contact_devs(request):
+    """
+    Render a contact page listing the developers of the Spotify Wrapped application.
+
+    This view provides contact information for the team members who worked on the
+    application.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: A response object rendering the developer contact page.
+    """
+
+
     developers = [
         {"name": "Arsheya Gourav", "email": "arsheya.gourav29@gmail.con"},
         {"name": "Sruthi Medepalli", "email": "sruthi.medepalli@gmail.com"},

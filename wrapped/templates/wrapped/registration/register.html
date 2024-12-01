@@ -1,4 +1,11 @@
 <!-- templates/wrapped/registration/register.html -->
+
+<!--
+    Template: Registration Page for Spotify Wrapped
+    Description: This template renders a registration form for new users to create an account.
+                 It includes Django's form rendering, CSRF protection, and links to the login page.
+    Dependencies: TailwindCSS for styling.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,18 +14,23 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <title>Register - Spotify Wrapped</title>
 </head>
+
+   <!-- Registration Form Container -->
 <body class="flex items-center justify-center h-screen bg-gray-100">
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 class="text-2xl font-bold text-center mb-4">Create an Account</h2>
+            <!-- Registration Form -->
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
             <div class="text-center">
+                 <!-- Submit Button -->
                 <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded">
                     Register
                 </button>
             </div>
         </form>
+           <!-- Login Redirect -->
         <div class="text-center mt-4">
             <p class="text-gray-700">Already have an account? <a href="{% url 'login' %}" class="text-blue-500 hover:underline">Log in here</a>.</p>
         </div>
