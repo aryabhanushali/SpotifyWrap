@@ -5,25 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cff60169-3825-49b3-a81f-a2a6136751ee" name="Changes" comment="minor changes">
-      <change beforePath="$PROJECT_DIR$/.idea/SpotifyWrap.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/SpotifyWrap.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_31_24,_2_15 PM_[Changes]/db.sqlite3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_31_24,_2_15 PM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_31_24__2_15PM__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpotifyWrapped/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpotifyWrapped/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SpotifyWrapped/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/SpotifyWrapped/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spotifyWrapped-1" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wrapped/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/Artist Modal Template.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/Artist Modal Template.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/contactDev.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/contactDev.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wrapped/templates/wrapped/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/templates/wrapped/registration/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wrapped/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wrapped/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -33,6 +23,13 @@
   </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Merge.Settings">
     <option name="BRANCH" value="origin/arsh" />
@@ -136,6 +133,17 @@
       <workItem from="1732044802183" duration="373000" />
       <workItem from="1732737259830" duration="770000" />
       <workItem from="1732741940071" duration="231000" />
+      <workItem from="1732744525289" duration="124000" />
+      <workItem from="1732749919663" duration="1116000" />
+      <workItem from="1733016167231" duration="19000" />
+      <workItem from="1733024121642" duration="10681000" />
+      <workItem from="1733077213441" duration="599000" />
+      <workItem from="1733077816883" duration="38000" />
+      <workItem from="1733077857459" duration="118000" />
+      <workItem from="1733077978396" duration="18000" />
+      <workItem from="1733077998150" duration="160000" />
+      <workItem from="1733078161681" duration="1789000" />
+      <workItem from="1733079959453" duration="10671000" />
     </task>
     <task id="LOCAL-00001" summary="secret">
       <option name="closed" value="true" />
@@ -182,6 +190,23 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="secret" />

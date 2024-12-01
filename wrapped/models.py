@@ -25,3 +25,4 @@ class SpotifyWrappedData(models.Model):
     total_time_listened = models.IntegerField()  # Store total time listened
     created_at = models.DateTimeField(auto_now_add=True)
 
+

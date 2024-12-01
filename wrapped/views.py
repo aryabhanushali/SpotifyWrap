@@ -10,6 +10,20 @@ import string
 from .models import SpotifyWrappedData, Profile
 from django.utils import timezone
 from functools import wraps
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import ensure_csrf_cookie
+import json
+import google.generativeai as genai
+from django.core.cache import cache
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+# Configure Gemini
+genai.configure(api_key=settings.GOOGLE_API_KEY)
+gemini_model = genai.GenerativeModel('models/gemini-1.5-pro-latest')
+
 
 
 def check_theme(request):
@@ -302,3 +316,53 @@ def error_500(request):
         'theme': check_theme(request),
         'page_title': 'Server Error'
     }, status=500)
+
+
+@require_http_methods(["POST"])
+@ensure_csrf_cookie
+def chat_predict(request):
+    try:
+        logger.info("Received chat predict request")
+        data = json.loads(request.body)
+        message = data.get('message', '').strip()
+
+        if not message:
+            return JsonResponse({
+                'answer': "Please provide a message."
+            }, status=400)
+
+        # System prompt to give context to Gemini
+        system_prompt = """
+        You are Jarvis, a friendly, AI assistant for a Spotify Wrapped application. You can:
+        1. Discuss music, artists, and genres
+        2. Give recommendations based on user preferences
+        3. Talk about music trends and history
+        4. Share interesting facts about music
+        5. Help users discover new music
+
+        Keep responses friendly and music-focused.
+        """
+
+        # Combine system prompt with user message
+        full_prompt = f"{system_prompt}\n\nUser: {message}\nAssistant:"
+
+        try:
+            response = gemini_model.generate_content(full_prompt)
+            return JsonResponse({
+                'answer': response.text
+            })
+        except Exception as e:
+            logger.error(f"Gemini API error: {e}")
+            return JsonResponse({
+                'answer': "I'm having trouble processing your request. Please try again."
+            })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'answer': "Invalid request format."
+        }, status=400)
+    except Exception as e:
+        logger.error(f"Chat error: {e}")
+        return JsonResponse({
+            'answer': "Sorry, something went wrong. Please try again."
+        }, status=500)

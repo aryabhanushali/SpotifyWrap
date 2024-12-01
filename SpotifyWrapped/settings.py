@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-6w4lb!o+aqa3c5b4z*zxj$h(@&6nofg4&ah9zvv+n5+1yd#qxy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -88,6 +88,13 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+#Storing Cache data
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
 
 
 # Password validation
@@ -134,3 +141,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = "http://localhost:8000/spotify/callback"
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')

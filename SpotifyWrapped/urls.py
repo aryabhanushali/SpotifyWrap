@@ -30,6 +30,9 @@ urlpatterns = [
 
     path("wrapped/<str:wrapped_id>/", views.shareable_page, name="shareable_page"),
 
+    path('chat_predict/', views.chat_predict, name='chat_predict'),
+
 ]
 handler404 = 'wrapped.views.error_404'
 handler500 = 'wrapped.views.error_500'
+

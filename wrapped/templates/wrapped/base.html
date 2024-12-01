@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -190,5 +191,206 @@
     </script>
 
     {% block extra_scripts %}{% endblock %}
+    
+    <!-- Chat Widget -->
+    <div id="chat-widget" class="fixed bottom-4 right-4 z-[60]"> 
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle" class="bg-spotify-green hover:bg-spotify-green-dark text-white rounded-full p-4 shadow-lg transition-all duration-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+        </button>
+    
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden bg-spotify-dark-card rounded-lg shadow-xl w-[360px]">
+            <!-- Chat Header -->
+            <div class="flex items-center justify-between bg-spotify-green p-4 rounded-t-lg">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-spotify-black font-bold">J</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-black">Jarvis</h3>
+                        <p class="text-xs text-green-100">Music Assistant</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="chat-minimize" class="text-white hover:text-green-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                    </button>
+                    <button id="chat-close" class="text-white hover:text-green-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+    
+            <!-- Messages Area -->
+            <div id="chat-messages" class="h-[380px] overflow-y-auto p-4 space-y-4">
+                <div class="flex justify-start">
+                    <div class="max-w-[80%] bg-spotify-dark-hover text-white rounded-lg px-4 py-2">
+                        Hey! I'm Sam, your music insights assistant. How can I help you explore your Spotify Wrapped?
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Input Area -->
+            <div class="p-4 border-t border-gray-700">
+                <form id="chat-form" class="flex space-x-2">
+                    {% csrf_token %}
+                    <input 
+                        type="text" 
+                        id="chat-input"
+                        placeholder="Ask about your music..."
+                        class="flex-1 bg-black text-white rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-spotify-green"
+                    >
+                    <button 
+                        type="submit"
+                        class="bg-spotify-green hover:bg-spotify-green-dark disabled:opacity-50 text-white rounded-full p-2 transition-colors duration-300"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Widget Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatWidget = document.getElementById('chat-widget');
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const chatClose = document.getElementById('chat-close');
+        const chatMinimize = document.getElementById('chat-minimize');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+    
+        let isMinimized = false;
+    
+        // Toggle chat window
+        chatToggle.addEventListener('click', () => {
+            chatWindow.classList.remove('hidden');
+            chatToggle.classList.add('hidden');
+        });
+    
+        // Close chat window
+        chatClose.addEventListener('click', () => {
+            chatWindow.classList.add('hidden');
+            chatToggle.classList.remove('hidden');
+        });
+    
+        // Minimize chat window
+        chatMinimize.addEventListener('click', () => {
+            isMinimized = !isMinimized;
+            if (isMinimized) {
+                chatMessages.style.display = 'none';
+                chatForm.style.display = 'none';
+                chatWindow.style.height = '60px';
+            } else {
+                chatWindow.style.height = 'auto';
+                chatMessages.style.display = 'block';
+                chatForm.style.display = 'flex';
+            }
+        });
+    
+        // Handle message submission
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+    
+            // Add user message to chat
+            addMessage(message, false);
+            chatInput.value = '';
+    
+            // Add loading indicator
+            const loadingDiv = addLoadingIndicator();
+    
+            try {
+                // Send message to backend
+                const response = await fetch('/chat_predict/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+    
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const data = await response.json();
+                
+                // Remove loading indicator
+                loadingDiv.remove();
+                
+                // Add bot response
+                addMessage(data.answer, true);
+            } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.remove();
+                addMessage("Sorry, I'm having trouble connecting right now. Please try again later.", true);
+            }
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+    
+        // Helper function to add messages to the chat
+        function addMessage(text, isBot) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${isBot ? 'justify-start' : 'justify-end'}`;
+            messageDiv.innerHTML = `
+                <div class="max-w-[80%] rounded-lg px-4 py-2 ${
+                    isBot 
+                        ? 'bg-spotify-dark-hover text-white' 
+                        : 'bg-spotify-green text-white'
+                }">
+                    ${text}
+                </div>
+            `;
+            chatMessages.appendChild(messageDiv);
+        }
+    
+        // Helper function to add loading indicator
+        function addLoadingIndicator() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'flex justify-start';
+            loadingDiv.innerHTML = `
+                <div class="max-w-[80%] bg-spotify-dark-hover text-white rounded-lg px-4 py-2">
+                    <div class="flex space-x-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(loadingDiv);
+            return loadingDiv;
+        }
+    
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+    </script>
 </body>
 </html>
