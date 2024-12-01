@@ -114,9 +114,10 @@
     {% if user.is_authenticated %}
     <section class="py-20 bg-spotify-black text-center">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-white">Want a deep dive into your listening history?.</h2>
-            </p>
-            <a href="{% url 'view_old_wrappeds' %}
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 text-white">
+                Want a deep dive into your listening history?
+            </h2>
+            <a href="{% url 'old_wrappeds' %}"
                class="btn-spotify-outline text-lg inline-flex items-center"
                data-loading>
                 View Previous Spotify Wraps here.

@@ -225,14 +225,16 @@ def user_dashboard(request):
 
     headers = {"Authorization": f"Bearer {access_token}"}
 
+    duration = request.GET.get('duration', 'long_term')
+
     # Fetch data from Spotify API
     top_tracks = requests.get(
-        "https://api.spotify.com/v1/me/top/tracks?limit=5", headers=headers
+        f"https://api.spotify.com/v1/me/top/tracks?limit=5&time_range={duration}", headers=headers
     ).json().get("items", [])
 
     # Fetch top artists with their detailed data
     top_artists_response = requests.get(
-        "https://api.spotify.com/v1/me/top/artists?limit=5", headers=headers
+        f"https://api.spotify.com/v1/me/top/artists?limit=5&time_range={duration}", headers=headers
     ).json().get("items", [])
 
     # Enhance artist data with their top tracks
@@ -372,6 +374,10 @@ def user_dashboard(request):
             "content": "That's a wrap on your Spotify highlights!"
         }
     ]
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({"slides": slides})
+
     shareable_page_url = reverse('shareable_page', kwargs={'wrapped_id': wrapped_id})
     if request.method == "POST":
         form = SaveWrapsForm(request.POST)
@@ -392,12 +398,14 @@ def user_dashboard(request):
     context = {"slides": slides,
                'wrapped_id': wrapped_id,
                'shareable_page_url': shareable_page_url,
+               'duration': duration,
                }
-    started = request.GET.get('started') == 'true'
-    if started:
-        return render(request, "wrapped/dashboard.html", context)
-    else:
-        return render(request, "wrapped/home.html", context)
+    # started = request.GET.get('started') == 'true'
+    # if started:
+    #     return render(request, "wrapped/dashboard.html", context)
+    # else:
+    #     return render(request, "wrapped/home.html", context)
+    return render(request, "wrapped/dashboard.html", context)
 
 def shareable_page(request, wrapped_id):
     try:
@@ -423,3 +431,13 @@ def view_old_wrappeds(request):
     return render(request, "wrapped/old_wrappeds.html", context)
 class SaveWrapsForm(forms.Form):
     custom_name = forms.CharField(max_length=255, label="Name your wrap!")
+
+def contact_devs(request):
+    developers = [
+        {"name": "Arsheya Gourav", "email": "arsheya.gourav29@gmail.con"},
+        {"name": "Sruthi Medepalli", "email": "sruthi.medepalli@gmail.com"},
+        {"name": "Arya Bhanushali", "email": "aryabhanush@gmail.com"},
+        {"name": "Mihika Gottimukala", "email": "mihikacg@gmail.com"},
+        {"name": "Ritish Pokhrel", "email": "ritish.pokhrel24@gmail.com"},
+    ]
+    return render(request, "wrapped/contact_devs.html", {'developers': developers})

@@ -1,0 +1,23 @@
+{% extends 'wrapped/base.html' %}
+
+{% block content %}
+<section class="flex justify-center items-center px-4 py-12 bg-spotify-dark">
+  <div class="w-full max-w-3xl">
+    <h2 class="text-4xl font-bold text-spotify-green mb-6 text-center">Contact Developers</h2>
+    <p class="text-gray-300 text-center mb-8">
+      Have questions, feedback, or need assistance? Reach out to one of our developers directly by clicking their name below.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8 text-center">
+      {% for developer in developers %}
+        <a
+          href="mailto:{{ developer.email }}?subject=Spotify Wrapped Inquiry&body=Hello {{ developer.name }},%0D%0A%0D%0A[Your message here]%0D%0A%0D%0ABest regards,%0D%0A[Your Name]"
+          class="text-spotify-green hover:underline text-lg font-medium"
+        >
+          {{ developer.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

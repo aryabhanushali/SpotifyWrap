@@ -98,32 +98,64 @@
 
 {% block extra_scripts %}
 <script>
+/**
+ * Displays a modal for the specified artist.
+ * @param {string} artistId - The unique ID of the artist whose modal should be shown.
+ */
 function showArtistModal(artistId) {
+    // Get the modal element using the artist ID
     const modal = document.getElementById(`artist-modal-${artistId}`);
+
+    // Add the 'active' class to make the modal visible
     modal.classList.add('active');
+
+    // Disable scrolling on the body while the modal is open
     document.body.style.overflow = 'hidden';
 }
 
+/**
+ * Hides the modal for the specified artist.
+ * @param {string} artistId - The unique ID of the artist whose modal should be hidden.
+ */
 function hideArtistModal(artistId) {
+    // Get the modal element using the artist ID
     const modal = document.getElementById(`artist-modal-${artistId}`);
+
+    // Remove the 'active' class to hide the modal
     modal.classList.remove('active');
+
+    // Re-enable scrolling on the body after the modal is closed
     document.body.style.overflow = '';
 }
 
-// Close modal when clicking outside
+/**
+ * Event listener for detecting clicks outside the modal content.
+ * Closes the modal if the clicked element is the modal background.
+ */
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
+        // Extract the artist ID from the modal element's ID
         const artistId = e.target.id.split('-')[2];
+
+        // Hide the modal
         hideArtistModal(artistId);
     }
 });
 
-// Close modal with escape key
+/**
+ * Event listener for detecting the Escape key press.
+ * Closes the currently active modal when the Escape key is pressed.
+ */
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+        // Find the currently active modal
         const activeModal = document.querySelector('.modal.active');
+
         if (activeModal) {
+            // Extract the artist ID from the modal element's ID
             const artistId = activeModal.id.split('-')[2];
+
+            // Hide the modal
             hideArtistModal(artistId);
         }
     }

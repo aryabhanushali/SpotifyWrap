@@ -116,14 +116,21 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-spotify-dark mt-12">
-        <div class="container mx-auto px-4 py-6">
-            <div class="text-center text-gray-400 text-sm">
-                <p>Built with Django and Tailwind CSS</p>
-                <p class="mt-2">© {% now "Y" %} Spotify Wrapped. Not affiliated with Spotify AB.</p>
-            </div>
+<footer class="bg-spotify-dark mt-12">
+    <div class="container mx-auto px-4 py-6">
+        <div class="text-center text-gray-400 text-sm">
+            <p>Built with Django and Tailwind CSS</p>
+            <p class="mt-2">© {% now "Y" %} Spotify Wrapped. Not affiliated with Spotify AB.</p>
+            <p class="mt-4">
+                Got a question?
+                <a href="{% url 'contact_devs' %}"
+                   class="btn-spotify-outline text-sm inline-block">
+                    Contact our developers here.
+                </a>
+            </p>
         </div>
-    </footer>
+    </div>
+</footer>
 
     <!-- Loading Overlay -->
     <div id="loading-overlay"
@@ -135,26 +142,46 @@
     </div>
 
     <script>
-        // Utility function to show/hide loading overlay
-        function showLoading() {
-            document.getElementById('loading-overlay').classList.remove('hidden');
-            document.getElementById('loading-overlay').classList.add('flex');
-        }
+/**
+ * Utility function to display the loading overlay.
+ * This makes the overlay visible by removing the 'hidden' class and adding the 'flex' class.
+ */
+function showLoading() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+    }
+}
 
-        function hideLoading() {
-            document.getElementById('loading-overlay').classList.add('hidden');
-            document.getElementById('loading-overlay').classList.remove('flex');
-        }
+/**
+ * Utility function to hide the loading overlay.
+ * This hides the overlay by adding the 'hidden' class and removing the 'flex' class.
+ */
+function hideLoading() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    }
+}
 
-        // Add loading indicator for links with data-loading attribute
-        document.querySelectorAll('[data-loading]').forEach(element => {
-            element.addEventListener('click', () => showLoading());
-        });
+/**
+ * Adds a click event listener to elements with the 'data-loading' attribute.
+ * When such an element is clicked, the loading overlay is displayed.
+ */
+document.querySelectorAll('[data-loading]').forEach(element => {
+    element.addEventListener('click', () => showLoading());
+});
 
-        // Handle form submissions
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', () => showLoading());
-        });
+/**
+ * Adds a submit event listener to all forms on the page.
+ * When a form is submitted, the loading overlay is displayed.
+ */
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', () => showLoading());
+});
+
     </script>
 
     {% block extra_scripts %}{% endblock %}
