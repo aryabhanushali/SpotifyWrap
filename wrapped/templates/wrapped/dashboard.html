@@ -24,20 +24,24 @@
 
             <div class="slide flex flex-col justify-center items-center text-center p-8 transition-opacity duration-500" id="slide-1">
                 <h2 class="text-5xl font-bold text-spotify-green mb-6 welcome-title">{{ slides.0.title }}</h2>
-                <p class="text-2xl text-white mb-8">{{ slides.0.content }}</p>
+                <p class="description text-2xl text-white mb-8">
+                    Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!
+                </p>
                 <form method="get" action="{% url 'user_dashboard' %}" class="mb-10">
-                    <label for="duration" class="text-white mr-2">Time Range:</label>
+                    <label id="time-range-label" for="duration" class="text-white mr-2">Time Range:</label>
                     <select name="duration" id="duration" class="px-4 py-2 rounded-md text-gray-900">
                         <option value="long_term" {% if duration == 'long_term' %}selected{% endif %}>All Time</option>
                         <option value="medium_term" {% if duration == 'medium_term' %}selected{% endif %}>Last 6 Months</option>
                         <option value="short_term" {% if duration == 'short_term' %}selected{% endif %}>Last 4 Weeks</option>
                     </select>
-                    <button type="submit" class="ml-2 bg-spotify-green text-white px-4 py-2 rounded-md">Apply</button>
+                    <button id="apply-button" type="submit" class="ml-2 bg-spotify-green text-white px-4 py-2 rounded-md">
+                        Apply
+                    </button>
                 </form>
-                <button onclick="showSlide(2);"
-                        class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-4 rounded-full text-xl transition duration-300">
-                    Let's Go!
-                </button>
+                <button id="lets-go-button" onclick="showSlide(2);"
+        class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-4 rounded-full text-xl transition duration-300">
+    Let's Go!
+</button>
             </div>
 
             <!-- Slide 2: Top Tracks -->
@@ -201,13 +205,16 @@
                 <h2 class="text-4xl font-bold text-spotify-green mb-6 slide-title">{{ slides.8.title }}</h2>
                 <div class="h-full flex flex-col justify-center items-center text-center">
                     <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.8.title }}</h2>
-                    <p class="text-2xl text-white mb-8">{{ slides.8.content }}</p>
+                    <p id="finalSlideContent" class="text-2xl text-white mb-8">
+                        That's a wrap on your Spotify highlights!
+                    </p>
 
                     <div class="save-wrap mt-8">
-                        <h3 class="text-xl text-white mb-4">Do you want to save your Wrapped?</h3>
+                        <h3 id="saveWrappedHeading" class="text-xl text-white mb-4">Do you want to save your Wrapped?</h3>
+
                         <form method="POST" action="{% url 'user_dashboard' %}">
                             {% csrf_token %}
-                            <label for="custom_name" class="block text-lg text-white mb-2">Enter a name for your Wrapped here:</label>
+                            <label id="customNameLabel" for="custom_name" class="block text-lg text-white mb-2">Enter a name for your Wrapped here:</label>
                             <input
                                 type="text"
                                 id="custom_name"
@@ -216,15 +223,16 @@
                                 placeholder="e.g., My 2024 Wrapped"
                                 required>
 
-                            <button type="submit"
-                                    class="mt-4 bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
-                                Save
-                            </button>
+                           <button id="saveButton" type="submit"
+        class="mt-4 bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full transition duration-300">
+    Save
+</button>
+
                         </form>
                     </div>
 
 <div class="social-share mt-8">
-    <h3 class="text-xl text-white mb-4">And share your Wrapped:</h3>
+    <h3 id="shareWrappedText" class="text-xl text-white mb-4">And share your Wrapped:</h3>
     <div class="flex justify-center space-x-8">
         <!-- Instagram -->
         <a href="https://www.instagram.com/accounts/login/" target="_blank" onclick="downloadAndRedirect(this.href); return false;" class="text-white hover:text-spotify-green transition duration-300">
@@ -593,9 +601,20 @@ function downloadAndRedirect(url) {
             en: {
                 title: "Your Spotify Wrapped",
                 welcome: "Let's Go!",
+                description: "Welcome to Your Spotify Wrapped! Discover your top tracks, artists, and more!",
+                finalSlideContent: "That's a wrap on your Spotify highlights!",
+                saveWrappedHeading: "Do you want to save your Wrapped?",
+                customNameLabel: "Enter a name for your Wrapped here:",
                 switchTo: "Cambiar a Espanol",
+                saveButton: "Save",
+                timeRange: "Time Range:",
+                letsGoButton: "Let's Go!",
+                applyButton: "Apply",
                 previous: "Previous",
+
                 next: "Next",
+                shareWrappedText: "And share your Wrapped:",
+                finalSlideContent: "That's a wrap on your Spotify highlights!",
                 slides: [
                     "Top Tracks",                      // Slide 2
                     "Top Artists",                     // Slide 3
@@ -610,9 +629,19 @@ function downloadAndRedirect(url) {
             es: {
                 title: "Tu Spotify Wrapped",
                 welcome: "¡Vamos!",
+                description: "¡Bienvenido a Tu Spotify Wrapped! Descubre tus mejores canciones, artistas y más.",
+                finalSlideContent: "¡Eso es todo sobre tus momentos destacados en Spotify!",
+                saveWrappedHeading: "¿Quieres guardar tu Wrapped?",
+                customNameLabel: "Escribe un nombre para tu Wrapped aquí:",
                 switchTo: "Cambiar a Francés",
+                saveButton: "Guardar",
+                timeRange: "Rango de Tiempo:",
+                letsGoButton: "¡Vamos!",
+                applyButton: "Aplicar",
                 previous: "Anterior",
                 next: "Siguiente",
+                shareWrappedText: "Comparte tu Wrapped:",
+                finalSlideContent: "¡Eso es todo sobre tus momentos destacados en Spotify!",
                 slides: [
                     "Tus Mejores Canciones",           // Slide 2
                     "Tus Mejores Artistas",            // Slide 3
@@ -627,9 +656,20 @@ function downloadAndRedirect(url) {
             fr: {
                 title: "Votre Spotify Wrapped",
                 welcome: "Allons-y!",
+                description: "Bienvenue sur Votre Spotify Wrapped! Découvrez vos meilleures chansons, artistes et plus encore.",
+                finalSlideContent: "C'est tout pour vos moments forts sur Spotify!",
+                saveWrappedHeading: "Voulez-vous enregistrer votre Wrapped?",
+                customNameLabel: "Entrez un nom pour votre Wrapped ici :",
                 switchTo: "Switch to English",
+                saveButton: "Enregistrer",
+                timeRange: "Période:",
+                letsGoButton: "Allons-y!",
+                applyButton: "Appliquer",
                 previous: "Précédent",
                 next: "Suivant",
+                shareWrappedText: "Partagez votre Wrapped :",
+                finalSlideContent: "C'est tout pour vos moments forts sur Spotify!",
+
                 slides: [
                     "Meilleures Chansons",             // Slide 2
                     "Meilleurs Artistes",             // Slide 3
@@ -648,6 +688,41 @@ function downloadAndRedirect(url) {
         // Update the title and welcome text
         document.querySelector("h1").textContent = currentTranslations.title;
         document.querySelector(".welcome-title").textContent = currentTranslations.welcome;
+        document.querySelector(".description").textContent = currentTranslations.description;
+        //update time range
+        document.getElementById("time-range-label").textContent = currentTranslations.timeRange;
+
+        // Update the custom name label text
+        document.getElementById("customNameLabel").textContent = currentTranslations.customNameLabel;
+
+
+
+
+        // Update the "Let's Go!" button
+        document.getElementById("lets-go-button").textContent = currentTranslations.letsGoButton;
+
+         // Update the "Apply" button
+        document.getElementById("apply-button").textContent = currentTranslations.applyButton;
+
+         // Update final slide content
+        document.getElementById("finalSlideContent").textContent = currentTranslations.finalSlideContent;
+
+         // Update the save wrapped heading
+        document.getElementById("saveWrappedHeading").textContent = currentTranslations.saveWrappedHeading;
+
+          // Update the "Save" button text
+        document.getElementById("saveButton").textContent = currentTranslations.saveButton;
+
+        // Update the "And share your Wrapped:" text
+        document.getElementById("shareWrappedText").textContent = currentTranslations.shareWrappedText;
+
+
+
+
+
+
+
+
 
         // Update the slide titles
         const slideTitles = document.querySelectorAll(".slide-title");
@@ -665,6 +740,10 @@ function downloadAndRedirect(url) {
             button.textContent = currentTranslations.next;
         });
     }
+
+
+
+
 
     function updateToggleButtonText(language) {
         const languageToggle = document.getElementById("language-toggle");
