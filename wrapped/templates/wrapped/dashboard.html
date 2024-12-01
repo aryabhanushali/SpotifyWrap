@@ -14,11 +14,21 @@
         <!-- Slides Container -->
         <div class="relative bg-spotify-card rounded-xl shadow-2xl p-8 flex-grow">
             <!-- Slide 1: Welcome -->
+
             <div class="slide flex flex-col justify-center items-center text-center p-8 transition-opacity duration-500" id="slide-1">
                 <h2 class="text-5xl font-bold text-spotify-green mb-6 welcome-title">{{ slides.0.title }}</h2>
                 <p class="text-2xl text-white mb-8">{{ slides.0.content }}</p>
+                <form method="get" action="{% url 'user_dashboard' %}" class="mb-10">
+                    <label for="duration" class="text-white mr-2">Time Range:</label>
+                    <select name="duration" id="duration" class="px-4 py-2 rounded-md text-gray-900">
+                        <option value="long_term" {% if duration == 'long_term' %}selected{% endif %}>All Time</option>
+                        <option value="medium_term" {% if duration == 'medium_term' %}selected{% endif %}>Last 6 Months</option>
+                        <option value="short_term" {% if duration == 'short_term' %}selected{% endif %}>Last 4 Weeks</option>
+                    </select>
+                    <button type="submit" class="ml-2 bg-spotify-green text-white px-4 py-2 rounded-md">Apply</button>
+                </form>
                 <button onclick="showSlide(2);"
-                        class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-3 rounded-full text-xl transition duration-300">
+                        class="animate-bounce bg-spotify-green hover:bg-spotify-green-dark text-white px-8 py-4 rounded-full text-xl transition duration-300">
                     Let's Go!
                 </button>
             </div>
