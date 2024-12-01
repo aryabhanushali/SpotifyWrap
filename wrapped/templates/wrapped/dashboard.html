@@ -9,6 +9,11 @@
             <button id="theme-toggle" class="bg-spotify-green text-white px-4 py-2 rounded-full transition duration-300">
             Switch to Light Mode
         </button>
+        <button id="language-toggle" class="ml-4 bg-spotify-green text-white px-4 py-2 rounded-full transition duration-300">
+            Switch to Spanish
+        </button>
+
+
         </div>
 
         <!-- Slides Container -->
@@ -191,7 +196,7 @@
 
             <!-- Final Slide -->
             <div class="slide hidden flex flex-col p-8" id="slide-9">
-                <h2 class="text-4xl font-bold text-spotify-green mb-6 slide-title">{{ slides.9.title }}</h2>
+                <h2 class="text-4xl font-bold text-spotify-green mb-6 slide-title">{{ slides.8.title }}</h2>
                 <div class="h-full flex flex-col justify-center items-center text-center">
                     <h2 class="text-5xl font-bold text-spotify-green mb-6">{{ slides.8.title }}</h2>
                     <p class="text-2xl text-white mb-8">{{ slides.8.content }}</p>
@@ -470,6 +475,90 @@ function downloadAndRedirect(url) {
 }
 
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const languageToggle = document.getElementById("language-toggle");
+        if (localStorage.getItem("language") === "es") {
+            setLanguage("es");
+        }
+
+        languageToggle.addEventListener("click", () => {
+            const currentLanguage = localStorage.getItem("language");
+            if (currentLanguage === "es") {
+                setLanguage("en");
+                localStorage.setItem("language", "en");
+                languageToggle.textContent = "Switch to Spanish";
+            } else {
+                setLanguage("es");
+                localStorage.setItem("language", "es");
+                languageToggle.textContent = "Switch to English";
+            }
+        });
+    });
+
+    function setLanguage(language) {
+        const translations = {
+            en: {
+                title: "Your Spotify Wrapped",
+                welcome: "Let's Go!",
+                switchToSpanish: "Switch to Spanish",
+                previous: "Previous",
+                next: "Next",
+                slides: [
+
+                    "Top Tracks",                      // Slide 2
+                    "Top Artists",                     // Slide 3
+                    "Recently Played",                 // Slide 4
+                    "Top Genres",                      // Slide 5
+                    "Track Popularity",                // Slide 6
+                    "Artist Followers",                // Slide 7
+                    "Total Time Listened",             // Slide 8
+                    "Thank You for Listening",         // Slide 9
+                ],
+            },
+            es: {
+                title: "Tu Spotify Wrapped",
+                welcome: "¡Vamos!",
+                switchToSpanish: "Cambiar a Inglés",
+                previous: "Anterior",
+                next: "Siguiente",
+                slides: [
+
+                    "Tus Mejores Canciones",           // Slide 2
+                    "Tus Mejores Artistas",            // Slide 3
+                    "Reproducciones Recientes",        // Slide 4
+                    "Tus Géneros Favoritos",           // Slide 5
+                    "Popularidad de las Canciones",    // Slide 6
+                    "Seguidores de Artistas",          // Slide 7
+                    "Tiempo Total Escuchado",          // Slide 8
+                    "Gracias por Escuchar",            // Slide 9
+                ],
+            },
+        };
+
+        // Update page title and welcome message
+        document.querySelector("h1").textContent = translations[language].title;
+        document.querySelector(".welcome-title").textContent = translations[language].welcome;
+
+        // Update slide titles
+        const slideTitles = document.querySelectorAll(".slide-title");
+        slideTitles.forEach((title, index) => {
+            title.textContent = translations[language].slides[index];
+        });
+
+        // Update navigation buttons (Previous/Next)
+        const previousButtons = document.querySelectorAll(".slide-nav-btn:nth-child(1)");
+        const nextButtons = document.querySelectorAll(".slide-nav-btn:nth-child(2)");
+        previousButtons.forEach(button => {
+            button.textContent = translations[language].previous;
+        });
+        nextButtons.forEach(button => {
+            button.textContent = translations[language].next;
+        });
+    }
+</script>
+
 
 
 

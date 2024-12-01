@@ -369,7 +369,6 @@ def user_dashboard(request):
             "content": total_time_listened
         },
         {
-            "title": "Thanks",
             "items": [],
             "content": "That's a wrap on your Spotify highlights!"
         }
