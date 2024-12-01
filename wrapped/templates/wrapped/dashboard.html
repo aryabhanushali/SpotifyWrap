@@ -6,6 +6,9 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-bold text-white">Your Spotify Wrapped</h1>
+            <button id="theme-toggle" class="bg-spotify-green text-white px-4 py-2 rounded-full transition duration-300">
+            Switch to Light Mode
+        </button>
         </div>
 
         <!-- Slides Container -->
@@ -239,6 +242,13 @@
         align-items: center;
         min-height: 100vh;
     }
+    .text-dynamic {
+    color: var(--header-color);
+    transition: color 0.3s ease;
+}
+
+
+
 
     .flex-grow {
         flex-grow: 1;
@@ -307,6 +317,69 @@
     }
 </style>
 
+<style>
+       :root {
+        --primary-bg: #000;
+        --secondary-bg: #121212;
+        --text-color: white;
+        --header-bg-color: transparent;
+        --header-color: white; /* Default dark mode header color */
+        --spotify-green: #1db954;
+        --spotify-green-dark: #15803d;
+    }
+
+    body.light-mode {
+        --primary-bg: #ffffff;
+        --secondary-bg: #f5f5f5;
+        --header-bg-color: green;
+        --text-color: black;
+        --header-color: var(--spotify-green);
+    }
+    .text-light-mode-green {
+    color: var(--spotify-green) !important;
+}
+
+    body {
+        background-color: var(--primary-bg);
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .header-container {
+        background-color: var(--header-bg-color);
+        transition: background-color 0.3s ease;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .bg-spotify-card {
+        background-color: var(--secondary-bg);
+    }
+
+    .bg-spotify-dark-card {
+        background-color: var(--secondary-bg);
+    }
+
+    .text-white {
+        color: var(--text-color);
+    }
+
+    .slide-nav-btn {
+        background-color: var(--spotify-green);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 9999px;
+        transition: background-color 0.3s;
+    }
+
+    .slide-nav-btn:hover {
+        background-color: var(--spotify-green-dark);
+    }
+
+
+
+    </style>
+
 <script>
     function showSlide(slideNumber) {
         const slides = document.querySelectorAll(".slide");
@@ -319,27 +392,73 @@
     document.addEventListener("DOMContentLoaded", () => {
         showSlide(1);
     });
-</script>
 
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeToggle = document.getElementById("theme-toggle");
+        const body = document.body;
+        const header = document.querySelector("h1"); // Tar
+
+        if (localStorage.getItem("theme") === "light") {
+            body.classList.add("light-mode");
+            themeToggle.textContent = "Switch to Dark Mode";
+            header.classList.add("text-light-mode-green");
+        }
+
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("light-mode");
+
+            if (body.classList.contains("light-mode")) {
+                themeToggle.textContent = "Switch to Dark Mode";
+                localStorage.setItem("theme", "light");
+                header.classList.add("text-light-mode-green");
+            } else {
+                themeToggle.textContent = "Switch to Light Mode";
+                localStorage.setItem("theme", "dark");
+                header.classList.remove("text-light-mode-green");
+            }
+        });
+    });
+</script>
 <script>
+/**
+ * Downloads an image and redirects the user to a specified URL.
+ * Fetches the image file, triggers a download, and then navigates to the provided URL.
+ *
+ * @param {string} url - The URL to redirect to after the download is complete.
+ */
 function downloadAndRedirect(url) {
+    /**
+     * Fetch the wrapped image file from the server.
+     */
     fetch('{% url "download_wrapped_image" %}')
         .then(response => response.blob())
         .then(blob => {
-            const url = window.URL.createObjectURL(blob);
+            /**
+             * Creates a temporary URL for the downloaded file.
+             * @type {string}
+             */
+            const tempUrl = window.URL.createObjectURL(blob);
+
+            // Create a temporary <a> element to trigger the download
             const a = document.createElement('a');
             a.style.display = 'none';
-            a.href = url;
-            a.download = 'spotify_wrapped.png';
+            a.href = tempUrl;
+            a.download = 'spotify_wrapped.png'; // Filename for the downloaded file
             document.body.appendChild(a);
+
+            // Trigger the download
             a.click();
-            window.URL.revokeObjectURL(url);
+
+            // Revoke the temporary URL to free resources
+            window.URL.revokeObjectURL(tempUrl);
         })
-        .catch(error => console.error('Download failed:', error))
+        .catch(error => console.error('Download failed:', error)) // Log any errors
         .finally(() => {
+            // Redirect to the specified URL
             window.location.href = url;
         });
 }
+
 </script>
 
 
