@@ -3,13 +3,14 @@
 {% block content %}
 <section class="py-12 bg-spotify-dark">
     <div class="container mx-auto px-4">
-        <h1 class="text-4xl font-bold text-spotify-green mb-6 text-center">Past Spotify Wrapped Summaries</h1>
+        <h1 class="text-4xl font-bold text-spotify-green mb-6 text-center">Look back in time with your old Spotify Wraps. </h1>
+        <p class="text-gray-300 text-center">Click to download summaries</p>
 
         {% if past_wrapped_summaries %}
-            <ul class="space-y-4">
+            <ul class="space-y-5">
                 {% for wrapped in past_wrapped_summaries %}
                     <li class="card">
-                        <a href="{% url 'shareable_page' wrapped.wrapped_id %}"
+                        <a href="{% url 'download_wrapped_image' %}"
                            class="text-spotify-green hover:underline text-lg font-medium">
                             Wrapped from {{ wrapped.created_at|date:"F j, Y" }} - {{ wrapped.custom_name }}
                         </a>
@@ -23,7 +24,7 @@
         <div class="mt-8 text-center">
             <a href="{% url 'user_dashboard' %}"
                class="btn-spotify text-sm">
-                Back to Dashboard
+                Generate a new Wrap!
             </a>
         </div>
     </div>
