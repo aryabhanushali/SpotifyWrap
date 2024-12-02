@@ -16,6 +16,28 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django import forms
 from .models import SpotifyWrappedData
+from django.contrib import messages
+from urllib.parse import urlencode
+import random
+import string
+from .models import SpotifyWrappedData, Profile
+from django.utils import timezone
+from functools import wraps
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import ensure_csrf_cookie
+import json
+import google.generativeai as genai
+import logging
+
+#configer logger!
+logger = logging.getLogger(__name__)
+
+
+
+# Configure Gemini
+genai.configure(api_key=settings.GOOGLE_API_KEY)
+gemini_model = genai.GenerativeModel('models/gemini-1.5-pro-latest')
+
 
 def user_dashboard(request):
     # Ensure the user is authenticated
@@ -441,3 +463,53 @@ def contact_devs(request):
         {"name": "Ritish Pokhrel", "email": "ritish.pokhrel24@gmail.com"},
     ]
     return render(request, "wrapped/contact_devs.html", {'developers': developers})
+
+#AI_chatbot request:
+@require_http_methods(["POST"])
+@ensure_csrf_cookie
+def chat_predict(request):
+    try:
+        logger.info("Received chat predict request")
+        data = json.loads(request.body)
+        message = data.get('message', '').strip()
+
+        if not message:
+            return JsonResponse({
+                'answer': "Please provide a message."
+            }, status=400)
+
+        # System prompt to give context to Gemini
+        system_prompt = """
+        You are Jarvis, a friendly, AI assistant for a Spotify Wrapped application. You can:
+        1. Discuss music, artists, and genres
+        2. Give recommendations based on user preferences
+        3. Talk about music trends and history
+        4. Share interesting facts about music
+        5. Help users discover new music
+
+        Keep responses friendly and music-focused.
+        """
+
+        # Combine system prompt with user message
+        full_prompt = f"{system_prompt}\n\nUser: {message}\nAssistant:"
+
+        try:
+            response = gemini_model.generate_content(full_prompt)
+            return JsonResponse({
+                'answer': response.text
+            })
+        except Exception as e:
+            logger.error(f"Gemini API error: {e}")
+            return JsonResponse({
+                'answer': "I'm having trouble processing your request. Please try again."
+            })
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'answer': "Invalid request format."
+        }, status=400)
+    except Exception as e:
+        logger.error(f"Chat error: {e}")
+        return JsonResponse({
+            'answer': "Sorry, something went wrong. Please try again."
+        }, status=500)

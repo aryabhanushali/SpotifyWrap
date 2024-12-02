@@ -30,4 +30,6 @@ urlpatterns = [
     path("old_wrappeds/", views.view_old_wrappeds, name="old_wrappeds"),
     path("contact_devs/", views.contact_devs, name="contact_devs"),
     path('download-wrapped-image/', views.download_wrapped_image, name='download_wrapped_image'),
+    path('chat_predict/', views.chat_predict, name='chat_predict'),
 ]
+

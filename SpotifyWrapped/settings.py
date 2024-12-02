@@ -131,3 +131,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SPOTIFY_CLIENT_ID = os.getenv("CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = "http://localhost:8000/spotify/callback"
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
